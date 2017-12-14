@@ -28,7 +28,9 @@ var MarkerManager = (function () {
         return this._markers.get(marker).then(function (m) { return m.setTitle(marker.title); });
     };
     MarkerManager.prototype.updateLabel = function (marker) {
-        return this._markers.get(marker).then(function (m) { m.setLabel(marker.label); });
+        return this._markers.get(marker).then(function (m) {
+            m.setLabel(marker.label);
+        });
     };
     MarkerManager.prototype.updateDraggable = function (marker) {
         return this._markers.get(marker).then(function (m) { return m.setDraggable(marker.draggable); });

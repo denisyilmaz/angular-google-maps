@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('js-marker-clusterer'), require('rxjs/Observable'), require('@agm/core')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', 'js-marker-clusterer', 'rxjs/Observable', '@agm/core'], factory) :
-	(factory((global.ngmaps = global.ngmaps || {}, global.ngmaps.jsMarkerClusterer = global.ngmaps.jsMarkerClusterer || {}),global.ng.core,null,global.Rx,global.ngmaps.core));
-}(this, (function (exports,_angular_core,jsMarkerClusterer,rxjs_Observable,_agm_core) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@agm/core'), require('@angular/core'), require('js-marker-clusterer'), require('rxjs/Observable')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@agm/core', '@angular/core', 'js-marker-clusterer', 'rxjs/Observable'], factory) :
+	(factory((global.ngmaps = global.ngmaps || {}, global.ngmaps.jsMarkerClusterer = global.ngmaps.jsMarkerClusterer || {}),global.ngmaps.core,global.ng.core,null,global.Rx));
+}(this, (function (exports,_agm_core,_angular_core,jsMarkerClusterer,rxjs_Observable) { 'use strict';
 
 var MapsAPILoader = (function () {
     function MapsAPILoader() {
@@ -24,8 +24,9 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         this._loader = _loader;
         this._zone = _zone;
-        this._map =
-            new Promise(function (resolve) { _this._mapResolver = resolve; });
+        this._map = new Promise(function (resolve) {
+            _this._mapResolver = resolve;
+        });
     }
     GoogleMapsAPIWrapper.prototype.createMap = function (el, mapOptions) {
         var _this = this;
@@ -36,7 +37,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.setMapOptions = function (options) {
-        this._map.then(function (m) { m.setOptions(options); });
+        this._map.then(function (m) {
+            m.setOptions(options);
+        });
     };
     /**
      * Creates a google map marker with the map context
@@ -52,7 +55,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.createInfoWindow = function (options) {
-        return this._map.then(function () { return new google.maps.InfoWindow(options); });
+        return this._map.then(function () {
+            return new google.maps.InfoWindow(options);
+        });
     };
     /**
      * Creates a google.map.Circle for the current map.
@@ -97,14 +102,18 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         return rxjs_Observable.Observable.create(function (observer) {
             _this._map.then(function (m) {
-                m.addListener(eventName, function (arg) { _this._zone.run(function () { return observer.next(arg); }); });
+                m.addListener(eventName, function (arg) {
+                    _this._zone.run(function () { return observer.next(arg); });
+                });
             });
         });
     };
     GoogleMapsAPIWrapper.prototype.setCenter = function (latLng) {
         return this._map.then(function (map) { return map.setCenter(latLng); });
     };
-    GoogleMapsAPIWrapper.prototype.getZoom = function () { return this._map.then(function (map) { return map.getZoom(); }); };
+    GoogleMapsAPIWrapper.prototype.getZoom = function () {
+        return this._map.then(function (map) { return map.getZoom(); });
+    };
     GoogleMapsAPIWrapper.prototype.getBounds = function () {
         return this._map.then(function (map) { return map.getBounds(); });
     };
@@ -132,7 +141,9 @@ var GoogleMapsAPIWrapper = (function () {
     /**
      * Returns the native Google Maps Map instance. Be careful when using this instance directly.
      */
-    GoogleMapsAPIWrapper.prototype.getNativeMap = function () { return this._map; };
+    GoogleMapsAPIWrapper.prototype.getNativeMap = function () {
+        return this._map;
+    };
     /**
      * Triggers the given event name on the map instance.
      */
@@ -177,7 +188,9 @@ var MarkerManager$1 = (function () {
         return this._markers.get(marker).then(function (m) { return m.setTitle(marker.title); });
     };
     MarkerManager$$1.prototype.updateLabel = function (marker) {
-        return this._markers.get(marker).then(function (m) { m.setLabel(marker.label); });
+        return this._markers.get(marker).then(function (m) {
+            m.setLabel(marker.label);
+        });
     };
     MarkerManager$$1.prototype.updateDraggable = function (marker) {
         return this._markers.get(marker).then(function (m) { return m.setDraggable(marker.draggable); });
@@ -263,12 +276,8 @@ var ClusterManager = (function (_super) {
     };
     ClusterManager.prototype.addMarker = function (marker) {
         var clusterPromise = this._clustererInstance;
-        var markerPromise = this._mapsWrapper
-            .createMarker({
-            position: {
-                lat: marker.latitude,
-                lng: marker.longitude
-            },
+        var markerPromise = this._mapsWrapper.createMarker({
+            position: { lat: marker.latitude, lng: marker.longitude },
             label: marker.label,
             draggable: marker.draggable,
             icon: marker.iconUrl,
@@ -278,9 +287,7 @@ var ClusterManager = (function (_super) {
             title: marker.title,
             clickable: marker.clickable,
         }, false);
-        Promise
-            .all([clusterPromise, markerPromise])
-            .then(function (_a) {
+        Promise.all([clusterPromise, markerPromise]).then(function (_a) {
             var cluster = _a[0], marker = _a[1];
             return cluster.addMarker(marker);
         });
@@ -479,11 +486,7 @@ var AgmJsMarkerClustererModule = (function () {
     return AgmJsMarkerClustererModule;
 }());
 AgmJsMarkerClustererModule.decorators = [
-    { type: _angular_core.NgModule, args: [{
-                imports: [_agm_core.AgmCoreModule],
-                declarations: [AgmMarkerCluster],
-                exports: [AgmMarkerCluster]
-            },] },
+    { type: _angular_core.NgModule, args: [{ imports: [_agm_core.AgmCoreModule], declarations: [AgmMarkerCluster], exports: [AgmMarkerCluster] },] },
 ];
 /** @nocollapse */
 AgmJsMarkerClustererModule.ctorParameters = function () { return []; };

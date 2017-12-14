@@ -47,19 +47,29 @@ var CircleManager = (function () {
         return this._circles.get(circle).then(function (c) { return c.getRadius(); });
     };
     CircleManager.prototype.setCenter = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setCenter({ lat: circle.latitude, lng: circle.longitude }); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setCenter({ lat: circle.latitude, lng: circle.longitude });
+        });
     };
     CircleManager.prototype.setEditable = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setEditable(circle.editable); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setEditable(circle.editable);
+        });
     };
     CircleManager.prototype.setDraggable = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setDraggable(circle.draggable); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setDraggable(circle.draggable);
+        });
     };
     CircleManager.prototype.setVisible = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setVisible(circle.visible); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setVisible(circle.visible);
+        });
     };
     CircleManager.prototype.setRadius = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setRadius(circle.radius); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setRadius(circle.radius);
+        });
     };
     CircleManager.prototype.createEventObservable = function (eventName, circle) {
         var _this = this;

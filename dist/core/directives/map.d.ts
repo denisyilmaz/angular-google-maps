@@ -177,10 +177,12 @@ export declare class AgmMap implements OnChanges, OnInit, OnDestroy {
     /**
      * This setting controls how gestures on the map are handled.
      * Allowed values:
-     * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are not handled by the map.)
+     * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are
+     * not handled by the map.)
      * - 'greedy'      (All touch gestures pan or zoom the map.)
      * - 'none'        (The map cannot be panned or zoomed by user gestures.)
-     * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on whether the page is scrollable or not.
+     * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on
+     * whether the page is scrollable or not.
      */
     gestureHandling: 'cooperative' | 'greedy' | 'none' | 'auto';
     /**
@@ -238,7 +240,8 @@ export declare class AgmMap implements OnChanges, OnInit, OnDestroy {
     private _updateMapOptionsChanges(changes);
     /**
      * Triggers a resize event on the google map instance.
-     * When recenter is true, the of the google map gets called with the current lat/lng values or fitBounds value to recenter the map.
+     * When recenter is true, the of the google map gets called with the current lat/lng values or
+     * fitBounds value to recenter the map.
      * Returns a promise that gets resolved after the event was triggered.
      */
     triggerResize(recenter?: boolean): Promise<void>;

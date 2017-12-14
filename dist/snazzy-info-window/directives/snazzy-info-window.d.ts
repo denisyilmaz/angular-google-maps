@@ -1,5 +1,5 @@
-import { OnChanges, AfterViewInit, EventEmitter, SimpleChanges, ViewContainerRef, TemplateRef, OnDestroy, ElementRef } from '@angular/core';
-import { AgmMarker, GoogleMapsAPIWrapper, MarkerManager, MapsAPILoader } from '@agm/core';
+import { AgmMarker, GoogleMapsAPIWrapper, MapsAPILoader, MarkerManager } from '@agm/core';
+import { AfterViewInit, ElementRef, EventEmitter, OnChanges, OnDestroy, SimpleChanges, TemplateRef, ViewContainerRef } from '@angular/core';
 export declare class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, OnChanges {
     private _marker;
     private _wrapper;
@@ -7,12 +7,14 @@ export declare class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, On
     private _loader;
     /**
      * The latitude and longitude where the info window is anchored.
-     * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
+     * The offset will default to 0px when using this option. Only required/used if you are not using
+     * a agm-marker.
      */
     latitude: number;
     /**
      * The longitude where the info window is anchored.
-     * The offset will default to 0px when using this option. Only required/used if you are not using a agm-marker.
+     * The offset will default to 0px when using this option. Only required/used if you are not using
+     * a agm-marker.
      */
     longitude: number;
     /**
@@ -87,7 +89,8 @@ export declare class AgmSnazzyInfoWindow implements AfterViewInit, OnDestroy, On
      */
     openOnMarkerClick: boolean;
     /**
-     * Determines if the info window will close when the map is clicked. An internal listener is added to the Google Maps click event which calls the close() method.
+     * Determines if the info window will close when the map is clicked. An internal listener is added
+     * to the Google Maps click event which calls the close() method.
      * This will not activate on the Google Maps drag event when the user is panning the map.
      */
     closeOnMapClick: boolean;

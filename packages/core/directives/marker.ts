@@ -1,6 +1,4 @@
-import {Directive, EventEmitter, OnChanges, OnDestroy, SimpleChange,
-  AfterContentInit, ContentChildren, QueryList, Input, Output
-} from '@angular/core';
+import {AfterContentInit, ContentChildren, Directive, EventEmitter, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChange} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {MouseEvent} from '../map-types';
@@ -34,9 +32,7 @@ let markerId = 0;
  * })
  * ```
  */
-@Directive({
-  selector: 'agm-marker'
-})
+@Directive({selector: 'agm-marker'})
 export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * The latitude position of the marker.
@@ -121,13 +117,16 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
   /**
    * @internal
    */
-  @ContentChildren(AgmInfoWindow) infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
+  @ContentChildren(AgmInfoWindow)
+  infoWindow: QueryList<AgmInfoWindow> = new QueryList<AgmInfoWindow>();
 
   private _markerAddedToManger: boolean = false;
   private _id: string;
   private _observableSubscriptions: Subscription[] = [];
 
-  constructor(private _markerManager: MarkerManager) { this._id = (markerId++).toString(); }
+  constructor(private _markerManager: MarkerManager) {
+    this._id = (markerId++).toString();
+  }
 
   /* @internal */
   ngAfterContentInit() {
@@ -216,10 +215,14 @@ export class AgmMarker implements OnDestroy, OnChanges, AfterContentInit {
   }
 
   /** @internal */
-  id(): string { return this._id; }
+  id(): string {
+    return this._id;
+  }
 
   /** @internal */
-  toString(): string { return 'AgmMarker-' + this._id.toString(); }
+  toString(): string {
+    return 'AgmMarker-' + this._id.toString();
+  }
 
   /** @internal */
   ngOnDestroy() {

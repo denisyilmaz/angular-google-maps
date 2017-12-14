@@ -7,10 +7,7 @@ var AgmSnazzyInfoWindowModule = (function () {
 }());
 export { AgmSnazzyInfoWindowModule };
 AgmSnazzyInfoWindowModule.decorators = [
-    { type: NgModule, args: [{
-                declarations: [AgmSnazzyInfoWindow],
-                exports: [AgmSnazzyInfoWindow]
-            },] },
+    { type: NgModule, args: [{ declarations: [AgmSnazzyInfoWindow], exports: [AgmSnazzyInfoWindow] },] },
 ];
 /** @nocollapse */
 AgmSnazzyInfoWindowModule.ctorParameters = function () { return []; };

@@ -1,8 +1,8 @@
 import { ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 import { MouseEvent } from '../map-types';
-import { GoogleStreetViewAPIWrapper } from '../services/google-street-view-api-wrapper';
 import { LatLngLiteral, StreetViewPov } from '../services/google-maps-types';
 import { LatLngBounds, LatLngBoundsLiteral } from '../services/google-maps-types';
+import { GoogleStreetViewAPIWrapper } from '../services/google-street-view-api-wrapper';
 /**
  * SebMGoogleMap renders a Google Map.
  * **Important note**: To be able see a map in the browser, you have to define a height for the CSS

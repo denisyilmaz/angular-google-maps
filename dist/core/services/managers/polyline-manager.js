@@ -36,10 +36,16 @@ var PolylineManager = (function () {
         if (m == null) {
             return Promise.resolve();
         }
-        return m.then(function (l) { return _this._zone.run(function () { l.setPath(path); }); });
+        return m.then(function (l) {
+            return _this._zone.run(function () {
+                l.setPath(path);
+            });
+        });
     };
     PolylineManager.prototype.setPolylineOptions = function (line, options) {
-        return this._polylines.get(line).then(function (l) { l.setOptions(options); });
+        return this._polylines.get(line).then(function (l) {
+            l.setOptions(options);
+        });
     };
     PolylineManager.prototype.deletePolyline = function (line) {
         var _this = this;

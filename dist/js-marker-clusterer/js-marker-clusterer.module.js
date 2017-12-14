@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
 import { AgmCoreModule } from '@agm/core';
+import { NgModule } from '@angular/core';
 import { AgmMarkerCluster } from './directives/marker-cluster';
 var AgmJsMarkerClustererModule = (function () {
     function AgmJsMarkerClustererModule() {
@@ -8,11 +8,7 @@ var AgmJsMarkerClustererModule = (function () {
 }());
 export { AgmJsMarkerClustererModule };
 AgmJsMarkerClustererModule.decorators = [
-    { type: NgModule, args: [{
-                imports: [AgmCoreModule],
-                declarations: [AgmMarkerCluster],
-                exports: [AgmMarkerCluster]
-            },] },
+    { type: NgModule, args: [{ imports: [AgmCoreModule], declarations: [AgmMarkerCluster], exports: [AgmMarkerCluster] },] },
 ];
 /** @nocollapse */
 AgmJsMarkerClustererModule.ctorParameters = function () { return []; };

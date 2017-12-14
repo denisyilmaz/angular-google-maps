@@ -1,11 +1,11 @@
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
 import {Injectable, NgZone} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 
 import {AgmInfoWindow} from '../../directives/info-window';
-
 import {GoogleMapsAPIWrapper} from '../google-maps-api-wrapper';
 import {InfoWindow, InfoWindowOptions} from '../google-maps-types';
+
 import {MarkerManager} from './marker-manager';
 
 @Injectable()
@@ -76,9 +76,9 @@ export class InfoWindowManager {
     this._infoWindows.set(infoWindow, infoWindowPromise);
   }
 
-   /**
-    * Creates a Google Maps event listener for the given InfoWindow as an Observable
-    */
+  /**
+   * Creates a Google Maps event listener for the given InfoWindow as an Observable
+   */
   createEventObservable<T>(eventName: string, infoWindow: AgmInfoWindow): Observable<T> {
     return Observable.create((observer: Observer<T>) => {
       this._infoWindows.get(infoWindow).then((i: InfoWindow) => {

@@ -1,6 +1,6 @@
-import { OnDestroy, OnChanges, OnInit, SimpleChange } from '@angular/core';
-import { ClusterManager } from '../services/managers/cluster-manager';
+import { OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 import { ClusterOptions, ClusterStyle } from '../services/google-clusterer-types';
+import { ClusterManager } from '../services/managers/cluster-manager';
 /**
  * AgmMarkerCluster clusters map marker if they are near together
  *
@@ -47,7 +47,8 @@ export declare class AgmMarkerCluster implements OnDestroy, OnChanges, OnInit, C
      */
     averageCenter: boolean;
     /**
-     * The minimum number of markers to be in a cluster before the markers are hidden and a count is shown.
+     * The minimum number of markers to be in a cluster before the markers are hidden and a count is
+     * shown.
      */
     minimumClusterSize: number;
     /**

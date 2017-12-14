@@ -1,5 +1,5 @@
 import { NgZone } from '@angular/core';
-import { TestBed, async, inject } from '@angular/core/testing';
+import { async, inject, TestBed } from '@angular/core/testing';
 import { AgmMarker } from './../../directives/marker';
 import { GoogleMapsAPIWrapper } from './../google-maps-api-wrapper';
 import { MarkerManager } from './../managers/marker-manager';
@@ -44,7 +44,9 @@ describe('MarkerManager', function () {
             var markerInstance = jasmine.createSpyObj('Marker', ['setMap']);
             apiWrapper.createMarker.and.returnValue(Promise.resolve(markerInstance));
             markerManager.addMarker(newMarker);
-            markerManager.deleteMarker(newMarker).then(function () { expect(markerInstance.setMap).toHaveBeenCalledWith(null); });
+            markerManager.deleteMarker(newMarker).then(function () {
+                expect(markerInstance.setMap).toHaveBeenCalledWith(null);
+            });
         }));
     });
     describe('set marker icon', function () {
@@ -69,7 +71,9 @@ describe('MarkerManager', function () {
             });
             var iconUrl = 'http://angular-maps.com/icon.png';
             newMarker.iconUrl = iconUrl;
-            return markerManager.updateIcon(newMarker).then(function () { expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl); });
+            return markerManager.updateIcon(newMarker).then(function () {
+                expect(markerInstance.setIcon).toHaveBeenCalledWith(iconUrl);
+            });
         })));
     });
     describe('set marker opacity', function () {
@@ -94,7 +98,9 @@ describe('MarkerManager', function () {
             });
             var opacity = 0.4;
             newMarker.opacity = opacity;
-            return markerManager.updateOpacity(newMarker).then(function () { expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity); });
+            return markerManager.updateOpacity(newMarker).then(function () {
+                expect(markerInstance.setOpacity).toHaveBeenCalledWith(opacity);
+            });
         })));
     });
     describe('set visible option', function () {
@@ -119,7 +125,9 @@ describe('MarkerManager', function () {
                 clickable: true
             });
             newMarker.visible = true;
-            return markerManager.updateVisible(newMarker).then(function () { expect(markerInstance.setVisible).toHaveBeenCalledWith(true); });
+            return markerManager.updateVisible(newMarker).then(function () {
+                expect(markerInstance.setVisible).toHaveBeenCalledWith(true);
+            });
         })));
     });
     describe('set zIndex option', function () {
@@ -145,7 +153,9 @@ describe('MarkerManager', function () {
             });
             var zIndex = 10;
             newMarker.zIndex = zIndex;
-            return markerManager.updateZIndex(newMarker).then(function () { expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex); });
+            return markerManager.updateZIndex(newMarker).then(function () {
+                expect(markerInstance.setZIndex).toHaveBeenCalledWith(zIndex);
+            });
         })));
     });
 });

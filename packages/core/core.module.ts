@@ -1,13 +1,14 @@
 import {ModuleWithProviders, NgModule} from '@angular/core';
-import {AgmMap} from './directives/map';
+
 import {AgmCircle} from './directives/circle';
+import {AgmDataLayer} from './directives/data-layer';
 import {AgmInfoWindow} from './directives/info-window';
+import {AgmKmlLayer} from './directives/kml-layer';
+import {AgmMap} from './directives/map';
 import {AgmMarker} from './directives/marker';
 import {AgmPolygon} from './directives/polygon';
 import {AgmPolyline} from './directives/polyline';
 import {AgmPolylinePoint} from './directives/polyline-point';
-import {AgmKmlLayer} from './directives/kml-layer';
-import {AgmDataLayer} from './directives/data-layer';
 import {AgmStreetView} from './directives/street-view';
 import {LazyMapsAPILoader} from './services/maps-api-loader/lazy-maps-api-loader';
 import {LAZY_MAPS_API_CONFIG, LazyMapsAPILoaderConfigLiteral} from './services/maps-api-loader/lazy-maps-api-loader';
@@ -19,9 +20,8 @@ import {BROWSER_GLOBALS_PROVIDERS} from './utils/browser-globals';
  */
 export function coreDirectives() {
   return [
-    AgmMap, AgmStreetView, AgmMarker, AgmInfoWindow, AgmCircle,
-    AgmPolygon, AgmPolyline, AgmPolylinePoint, AgmKmlLayer,
-    AgmDataLayer
+    AgmMap, AgmStreetView, AgmMarker, AgmInfoWindow, AgmCircle, AgmPolygon, AgmPolyline,
+    AgmPolylinePoint, AgmKmlLayer, AgmDataLayer
   ];
 }
 

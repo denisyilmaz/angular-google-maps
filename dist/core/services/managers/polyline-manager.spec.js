@@ -1,5 +1,5 @@
 import { NgZone } from '@angular/core';
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { AgmPolyline } from '../../directives/polyline';
 import { GoogleMapsAPIWrapper } from '../../services/google-maps-api-wrapper';
 import { PolylineManager } from '../../services/managers/polyline-manager';

@@ -8,10 +8,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { Injectable, NgZone } from '@angular/core';
 import 'js-marker-clusterer';
-import { MarkerManager } from '../../../core/services/managers/marker-manager';
+import { Injectable, NgZone } from '@angular/core';
 import { GoogleMapsAPIWrapper } from '../../../core/services/google-maps-api-wrapper';
+import { MarkerManager } from '../../../core/services/managers/marker-manager';
 var ClusterManager = (function (_super) {
     __extends(ClusterManager, _super);
     function ClusterManager(_mapsWrapper, _zone) {
@@ -32,12 +32,8 @@ var ClusterManager = (function (_super) {
     };
     ClusterManager.prototype.addMarker = function (marker) {
         var clusterPromise = this._clustererInstance;
-        var markerPromise = this._mapsWrapper
-            .createMarker({
-            position: {
-                lat: marker.latitude,
-                lng: marker.longitude
-            },
+        var markerPromise = this._mapsWrapper.createMarker({
+            position: { lat: marker.latitude, lng: marker.longitude },
             label: marker.label,
             draggable: marker.draggable,
             icon: marker.iconUrl,
@@ -47,9 +43,7 @@ var ClusterManager = (function (_super) {
             title: marker.title,
             clickable: marker.clickable,
         }, false);
-        Promise
-            .all([clusterPromise, markerPromise])
-            .then(function (_a) {
+        Promise.all([clusterPromise, markerPromise]).then(function (_a) {
             var cluster = _a[0], marker = _a[1];
             return cluster.addMarker(marker);
         });

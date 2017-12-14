@@ -87,9 +87,13 @@ var AgmKmlLayer = (function () {
         });
     };
     /** @internal */
-    AgmKmlLayer.prototype.id = function () { return this._id; };
+    AgmKmlLayer.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmKmlLayer.prototype.toString = function () { return "AgmKmlLayer-" + this._id.toString(); };
+    AgmKmlLayer.prototype.toString = function () {
+        return "AgmKmlLayer-" + this._id.toString();
+    };
     /** @internal */
     AgmKmlLayer.prototype.ngOnDestroy = function () {
         this._manager.deleteKmlLayer(this);
@@ -101,9 +105,7 @@ var AgmKmlLayer = (function () {
 export { AgmKmlLayer };
 AgmKmlLayer._kmlLayerOptions = ['clickable', 'preserveViewport', 'screenOverlays', 'suppressInfoWindows', 'url', 'zIndex'];
 AgmKmlLayer.decorators = [
-    { type: Directive, args: [{
-                selector: 'agm-kml-layer'
-            },] },
+    { type: Directive, args: [{ selector: 'agm-kml-layer' },] },
 ];
 /** @nocollapse */
 AgmKmlLayer.ctorParameters = function () { return [

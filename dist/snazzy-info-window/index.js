@@ -1,4 +1,4 @@
 // public API
-export { AgmSnazzyInfoWindowModule } from './snazzy-info-window.module';
 export { AgmSnazzyInfoWindow } from './directives/snazzy-info-window';
+export { AgmSnazzyInfoWindowModule } from './snazzy-info-window.module';
 //# sourceMappingURL=index.js.map

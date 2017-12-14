@@ -17,27 +17,25 @@ export interface GoogleMap extends MVCObject {
 }
 
 export interface GoogleStreetViewPanorama extends MVCObject {
-   constructor(el: HTMLElement, opts?: StreetViewPanoramaOptions): void;
-   getLinks(): Array<string>;
-   getPano(): string;
-   setPano(pano: string): void;
-   getPosition(): LatLng;
-   setPosition(latLng: LatLng|LatLngLiteral): void;
-   getPov(): StreetViewPov;
-   setPov(pov: StreetViewPov): void;
-   getVisible(): boolean;
-   setVisible(visible: boolean): void;
-   addCloseClickHandler(handler: Handler): void;
-   addLinksChangeHandler(handler: Handler): void;
-   addPanoChangeHandler(handler: Handler): void;
-   addPositionChangeHandler(handler: Handler): void;
-   addPovChangeHandler(handler: Handler): void;
-   addVisibleChangeHandler(handler: Handler): void;
+  constructor(el: HTMLElement, opts?: StreetViewPanoramaOptions): void;
+  getLinks(): Array<string>;
+  getPano(): string;
+  setPano(pano: string): void;
+  getPosition(): LatLng;
+  setPosition(latLng: LatLng|LatLngLiteral): void;
+  getPov(): StreetViewPov;
+  setPov(pov: StreetViewPov): void;
+  getVisible(): boolean;
+  setVisible(visible: boolean): void;
+  addCloseClickHandler(handler: Handler): void;
+  addLinksChangeHandler(handler: Handler): void;
+  addPanoChangeHandler(handler: Handler): void;
+  addPositionChangeHandler(handler: Handler): void;
+  addPovChangeHandler(handler: Handler): void;
+  addVisibleChangeHandler(handler: Handler): void;
 }
 
-export interface Handler {
-  onChange($event: any): void;
-}
+export interface Handler { onChange($event: any): void; }
 
 export interface LatLng {
   constructor(lat: number, lng: number): void;
@@ -200,21 +198,21 @@ export interface MapOptions {
 }
 
 export interface StreetViewPanoramaOptions {
-   addressControl?: boolean;
-   addressControlOptions?: any;
-   disableDoubleClickZoom?: boolean;
-   enableCloseButton?: boolean;
-   linksControl?: boolean;
-   panControl?: boolean;
-   panControlOptions?: any;
-   pano?: any;
-   provider?: any;
-   position?: LatLng|LatLngLiteral;
-   scrollwheel?: boolean;
-   pov?: StreetViewPov;
-   visible?: boolean;
-   zoomControl?: any;
-   zoomControlOptions?: any;
+  addressControl?: boolean;
+  addressControlOptions?: any;
+  disableDoubleClickZoom?: boolean;
+  enableCloseButton?: boolean;
+  linksControl?: boolean;
+  panControl?: boolean;
+  panControlOptions?: any;
+  pano?: any;
+  provider?: any;
+  position?: LatLng|LatLngLiteral;
+  scrollwheel?: boolean;
+  pov?: StreetViewPov;
+  visible?: boolean;
+  zoomControl?: any;
+  zoomControlOptions?: any;
 }
 
 export interface MapTypeStyle {
@@ -473,17 +471,11 @@ export interface DataOptions {
   style?: () => void;
 }
 
-export interface DataMouseEvent extends MouseEvent {
-  feature: Feature;
-}
+export interface DataMouseEvent extends MouseEvent { feature: Feature; }
 
-export interface GeoJsonOptions {
-  idPropertyName: string;
-}
+export interface GeoJsonOptions { idPropertyName: string; }
 
-export interface Geometry {
-  type: string;
-}
+export interface Geometry { type: string; }
 
 /**
  * Identifiers used to specify the placement of controls on the map. Controls are
@@ -536,9 +528,7 @@ export enum MapTypeControlStyle {
   HORIZONTAL_BAR
 }
 
-export interface OverviewMapControlOptions {
-  opened?: boolean;
-}
+export interface OverviewMapControlOptions { opened?: boolean; }
 
 /** Options for the rendering of the pan control. */
 export interface PanControlOptions {

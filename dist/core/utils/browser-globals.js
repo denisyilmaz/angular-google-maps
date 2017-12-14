@@ -1,14 +1,18 @@
 var WindowRef = (function () {
     function WindowRef() {
     }
-    WindowRef.prototype.getNativeWindow = function () { return window; };
+    WindowRef.prototype.getNativeWindow = function () {
+        return window;
+    };
     return WindowRef;
 }());
 export { WindowRef };
 var DocumentRef = (function () {
     function DocumentRef() {
     }
-    DocumentRef.prototype.getNativeDocument = function () { return document; };
+    DocumentRef.prototype.getNativeDocument = function () {
+        return document;
+    };
     return DocumentRef;
 }());
 export { DocumentRef };

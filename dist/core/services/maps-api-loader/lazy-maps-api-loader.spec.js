@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { DocumentRef, WindowRef } from '../../utils/browser-globals';
 import { GoogleMapsScriptProtocol, LAZY_MAPS_API_CONFIG, LazyMapsAPILoader } from './lazy-maps-api-loader';
 import { MapsAPILoader } from './maps-api-loader';

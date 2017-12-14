@@ -20,8 +20,9 @@ export class GoogleMapsAPIWrapper {
   private _mapResolver: (value?: mapTypes.GoogleMap) => void;
 
   constructor(private _loader: MapsAPILoader, private _zone: NgZone) {
-    this._map =
-        new Promise<mapTypes.GoogleMap>((resolve: () => void) => { this._mapResolver = resolve; });
+    this._map = new Promise<mapTypes.GoogleMap>((resolve: () => void) => {
+      this._mapResolver = resolve;
+    });
   }
 
   createMap(el: HTMLElement, mapOptions: mapTypes.MapOptions): Promise<void> {
@@ -33,14 +34,17 @@ export class GoogleMapsAPIWrapper {
   }
 
   setMapOptions(options: mapTypes.MapOptions) {
-    this._map.then((m: mapTypes.GoogleMap) => { m.setOptions(options); });
+    this._map.then((m: mapTypes.GoogleMap) => {
+      m.setOptions(options);
+    });
   }
 
   /**
    * Creates a google map marker with the map context
    */
-  createMarker(options: mapTypes.MarkerOptions = <mapTypes.MarkerOptions>{}, addToMap: boolean = true):
-      Promise<mapTypes.Marker> {
+  createMarker(
+      options: mapTypes.MarkerOptions = <mapTypes.MarkerOptions>{},
+      addToMap: boolean = true): Promise<mapTypes.Marker> {
     return this._map.then((map: mapTypes.GoogleMap) => {
       if (addToMap) {
         options.map = map;
@@ -50,7 +54,9 @@ export class GoogleMapsAPIWrapper {
   }
 
   createInfoWindow(options?: mapTypes.InfoWindowOptions): Promise<mapTypes.InfoWindow> {
-    return this._map.then(() => { return new google.maps.InfoWindow(options); });
+    return this._map.then(() => {
+      return new google.maps.InfoWindow(options);
+    });
   }
 
   /**
@@ -100,7 +106,9 @@ export class GoogleMapsAPIWrapper {
   subscribeToMapEvent<E>(eventName: string): Observable<E> {
     return Observable.create((observer: Observer<E>) => {
       this._map.then((m: mapTypes.GoogleMap) => {
-        m.addListener(eventName, (arg: E) => { this._zone.run(() => observer.next(arg)); });
+        m.addListener(eventName, (arg: E) => {
+          this._zone.run(() => observer.next(arg));
+        });
       });
     });
   }
@@ -109,7 +117,9 @@ export class GoogleMapsAPIWrapper {
     return this._map.then((map: mapTypes.GoogleMap) => map.setCenter(latLng));
   }
 
-  getZoom(): Promise<number> { return this._map.then((map: mapTypes.GoogleMap) => map.getZoom()); }
+  getZoom(): Promise<number> {
+    return this._map.then((map: mapTypes.GoogleMap) => map.getZoom());
+  }
 
   getBounds(): Promise<mapTypes.LatLngBounds> {
     return this._map.then((map: mapTypes.GoogleMap) => map.getBounds());
@@ -146,7 +156,9 @@ export class GoogleMapsAPIWrapper {
   /**
    * Returns the native Google Maps Map instance. Be careful when using this instance directly.
    */
-  getNativeMap(): Promise<mapTypes.GoogleMap> { return this._map; }
+  getNativeMap(): Promise<mapTypes.GoogleMap> {
+    return this._map;
+  }
 
   /**
    * Triggers the given event name on the map instance.

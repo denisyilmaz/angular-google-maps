@@ -5,8 +5,8 @@ import { InfoWindowManager } from '../services/managers/info-window-manager';
 import { MarkerManager } from '../services/managers/marker-manager';
 import { PolygonManager } from '../services/managers/polygon-manager';
 import { PolylineManager } from '../services/managers/polyline-manager';
-import { KmlLayerManager } from './../services/managers/kml-layer-manager';
 import { DataLayerManager } from './../services/managers/data-layer-manager';
+import { KmlLayerManager } from './../services/managers/kml-layer-manager';
 /**
  * AgmMap renders a Google Map.
  * **Important note**: To be able see a map in the browser, you have to define a height for the
@@ -126,10 +126,12 @@ var AgmMap = (function () {
         /**
          * This setting controls how gestures on the map are handled.
          * Allowed values:
-         * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are not handled by the map.)
+         * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are
+         * not handled by the map.)
          * - 'greedy'      (All touch gestures pan or zoom the map.)
          * - 'none'        (The map cannot be panned or zoomed by user gestures.)
-         * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on whether the page is scrollable or not.
+         * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on
+         * whether the page is scrollable or not.
          */
         this.gestureHandling = 'auto';
         this._observableSubscriptions = [];
@@ -182,7 +184,8 @@ var AgmMap = (function () {
     };
     AgmMap.prototype._initMapInstance = function (el) {
         var _this = this;
-        this._mapsWrapper.createMap(el, {
+        this._mapsWrapper
+            .createMap(el, {
             center: { lat: this.latitude || 0, lng: this.longitude || 0 },
             zoom: this.zoom,
             minZoom: this.minZoom,
@@ -237,12 +240,15 @@ var AgmMap = (function () {
     AgmMap.prototype._updateMapOptionsChanges = function (changes) {
         var options = {};
         var optionKeys = Object.keys(changes).filter(function (k) { return AgmMap._mapOptionsAttributes.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
         this._mapsWrapper.setMapOptions(options);
     };
     /**
      * Triggers a resize event on the google map instance.
-     * When recenter is true, the of the google map gets called with the current lat/lng values or fitBounds value to recenter the map.
+     * When recenter is true, the of the google map gets called with the current lat/lng values or
+     * fitBounds value to recenter the map.
      * Returns a promise that gets resolved after the event was triggered.
      */
     AgmMap.prototype.triggerResize = function (recenter) {
@@ -311,14 +317,18 @@ var AgmMap = (function () {
     AgmMap.prototype._handleBoundsChange = function () {
         var _this = this;
         var s = this._mapsWrapper.subscribeToMapEvent('bounds_changed').subscribe(function () {
-            _this._mapsWrapper.getBounds().then(function (bounds) { _this.boundsChange.emit(bounds); });
+            _this._mapsWrapper.getBounds().then(function (bounds) {
+                _this.boundsChange.emit(bounds);
+            });
         });
         this._observableSubscriptions.push(s);
     };
     AgmMap.prototype._handleMapTypeIdChange = function () {
         var _this = this;
         var s = this._mapsWrapper.subscribeToMapEvent('maptypeid_changed').subscribe(function () {
-            _this._mapsWrapper.getMapTypeId().then(function (mapTypeId) { _this.mapTypeIdChange.emit(mapTypeId); });
+            _this._mapsWrapper.getMapTypeId().then(function (mapTypeId) {
+                _this.mapTypeIdChange.emit(mapTypeId);
+            });
         });
         this._observableSubscriptions.push(s);
     };
@@ -334,7 +344,9 @@ var AgmMap = (function () {
     };
     AgmMap.prototype._handleIdleEvent = function () {
         var _this = this;
-        var s = this._mapsWrapper.subscribeToMapEvent('idle').subscribe(function () { _this.idle.emit(void 0); });
+        var s = this._mapsWrapper.subscribeToMapEvent('idle').subscribe(function () {
+            _this.idle.emit(void 0);
+        });
         this._observableSubscriptions.push(s);
     };
     AgmMap.prototype._handleMapMouseEvents = function () {
@@ -359,12 +371,33 @@ export { AgmMap };
  * Map option attributes that can change over time
  */
 AgmMap._mapOptionsAttributes = [
-    'disableDoubleClickZoom', 'scrollwheel', 'draggable', 'draggableCursor', 'draggingCursor',
-    'keyboardShortcuts', 'zoomControl', 'zoomControlOptions', 'styles', 'streetViewControl',
-    'streetViewControlOptions', 'zoom', 'mapTypeControl', 'mapTypeControlOptions', 'minZoom',
-    'maxZoom', 'panControl', 'panControlOptions', 'rotateControl', 'rotateControlOptions',
-    'fullscreenControl', 'fullscreenControlOptions', 'scaleControl', 'scaleControlOptions',
-    'mapTypeId', 'clickableIcons', 'gestureHandling'
+    'disableDoubleClickZoom',
+    'scrollwheel',
+    'draggable',
+    'draggableCursor',
+    'draggingCursor',
+    'keyboardShortcuts',
+    'zoomControl',
+    'zoomControlOptions',
+    'styles',
+    'streetViewControl',
+    'streetViewControlOptions',
+    'zoom',
+    'mapTypeControl',
+    'mapTypeControlOptions',
+    'minZoom',
+    'maxZoom',
+    'panControl',
+    'panControlOptions',
+    'rotateControl',
+    'rotateControlOptions',
+    'fullscreenControl',
+    'fullscreenControlOptions',
+    'scaleControl',
+    'scaleControlOptions',
+    'mapTypeId',
+    'clickableIcons',
+    'gestureHandling'
 ];
 AgmMap.decorators = [
     { type: Component, args: [{

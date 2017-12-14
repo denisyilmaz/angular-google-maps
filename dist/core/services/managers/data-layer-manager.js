@@ -15,10 +15,7 @@ var DataLayerManager = (function () {
      */
     DataLayerManager.prototype.addDataLayer = function (layer) {
         var _this = this;
-        var newLayer = this._wrapper.createDataLayer({
-            style: layer.style
-        })
-            .then(function (d) {
+        var newLayer = this._wrapper.createDataLayer({ style: layer.style }).then(function (d) {
             if (layer.geoJson) {
                 _this.getDataFeatures(d, layer.geoJson).then(function (features) { return d.features = features; });
             }

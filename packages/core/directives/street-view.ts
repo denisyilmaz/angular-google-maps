@@ -1,9 +1,10 @@
 import {Component, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChange} from '@angular/core';
-import {MouseEvent} from '../map-types';
 import {Subscription} from 'rxjs/Subscription';
-import {GoogleStreetViewAPIWrapper} from '../services/google-street-view-api-wrapper';
+
+import {MouseEvent} from '../map-types';
 import {LatLng, LatLngLiteral, StreetViewPanoramaOptions, StreetViewPov} from '../services/google-maps-types';
 import {LatLngBounds, LatLngBoundsLiteral} from '../services/google-maps-types';
+import {GoogleStreetViewAPIWrapper} from '../services/google-street-view-api-wrapper';
 import {CircleManager} from '../services/managers/circle-manager';
 import {InfoWindowManager} from '../services/managers/info-window-manager';
 import {MarkerManager} from '../services/managers/marker-manager';
@@ -36,28 +37,34 @@ import {PolylineManager} from '../services/managers/polyline-manager';
  */
 @Component({
   selector: 'agm-google-street-view',
-  providers:
-      [GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager],
+  providers: [
+    GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager
+  ],
   inputs: [
-    'longitude', 'latitude', 'heading', 'pitch', 'zoom', 'draggable: mapDraggable',
-    'disableDoubleClickZoom', 'backgroundColor', 'zoomControl',
+    'longitude',
+    'latitude',
+    'heading',
+    'pitch',
+    'zoom',
+    'draggable: mapDraggable',
+    'disableDoubleClickZoom',
+    'backgroundColor',
+    'zoomControl',
   ],
-  outputs: [
-    'mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'
-  ],
-  host: {'[class.sebm-google-street-view]': 'true'},
+  outputs: ['mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'],
+  host: {'[class.agm-street-view]': 'true'},
   styles: [`
-    .sebm-google-street-view-container-inner {
+    .agm-street-view-container-inner {
       width: inherit;
       height: inherit;
     }
-    .sebm-google-street-view-content {
+    .agm-street-view-content {
       display:none;
     }
   `],
   template: `
-    <div class='sebm-google-street-view-container-inner'></div>
-    <div class='sebm-google-street-view-content'>
+    <div class='agm-street-view-container-inner sebm-google-street-view-container-inner'></div>
+    <div class='agm-street-view-content'>
       <ng-content></ng-content>
     </div>
   `
@@ -219,7 +226,7 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
   /** @internal */
   ngOnInit() {
     // todo: this should be solved with a new component and a viewChild decorator
-    const container = this._elem.nativeElement.querySelector('.sebm-google-street-view-container-inner');
+    const container = this._elem.nativeElement.querySelector('.agm-street-view-container-inner');
     this._initMapInstance(container);
   }
 
@@ -261,7 +268,8 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
   // private _updateMapOptionsChanges(changes: {[propName: string]: SimpleChange}) {
   //   let options: {[propName: string]: any} = {};
   //   let optionKeys =
-  //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k) !== -1);
+  //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k)
+  //       !== -1);
   //   optionKeys.forEach((k) => { options[k] = changes[k].currentValue; });
   //   this._viewWrapper.setMapOptions(options);
   // }
@@ -275,8 +283,9 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
     // common case for triggering a resize event), then the resize event would not
     // work (to show the map), so we trigger the event in a timeout.
     return new Promise<void>((resolve) => {
-      setTimeout(
-          () => { return this._viewsWrapper.triggerMapEvent('resize').then(() => resolve()); });
+      setTimeout(() => {
+        return this._viewsWrapper.triggerMapEvent('resize').then(() => resolve());
+      });
     });
   }
 
@@ -300,7 +309,7 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
       lng: this.longitude,
     };
 
-      this._viewsWrapper.setPosition(newCenter);
+    this._viewsWrapper.setPosition(newCenter);
   }
 
   private _updatePov(changes: {[propName: string]: SimpleChange}) {
@@ -311,11 +320,8 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
     if (typeof this.pitch !== 'number' || typeof this.heading !== 'number') {
       return;
     }
-    let newPov: StreetViewPov = <StreetViewPov>{
-      heading: this.heading,
-      pitch: this.pitch,
-      zoom: this.zoom
-    };
+    let newPov: StreetViewPov =
+        <StreetViewPov>{heading: this.heading, pitch: this.pitch, zoom: this.zoom};
 
     this._viewsWrapper.setPov(newPov);
   }
@@ -347,7 +353,8 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
         this.pitch = pov.pitch;
         this.zoom = pov.zoom;
 
-        this.povChange.emit(<StreetViewPov>{heading: this.heading, pitch: this.pitch, zoom: this.zoom});
+        this.povChange.emit(
+            <StreetViewPov>{heading: this.heading, pitch: this.pitch, zoom: this.zoom});
       });
     });
     this._observableSubscriptions.push(s);
@@ -393,7 +400,9 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
     events.forEach((e: Event) => {
       const s = this._viewsWrapper.subscribeToViewEvent<{pov: StreetViewPov}>(e.name).subscribe(
           (event: {pov: StreetViewPov}) => {
-            const value = <MouseEvent>{coords: {heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom}};
+            const value = <MouseEvent>{
+              coords: {heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom}
+            };
             e.emitter.emit(value);
           });
       this._observableSubscriptions.push(s);

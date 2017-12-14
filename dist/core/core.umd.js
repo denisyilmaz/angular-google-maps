@@ -24,8 +24,9 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         this._loader = _loader;
         this._zone = _zone;
-        this._map =
-            new Promise(function (resolve) { _this._mapResolver = resolve; });
+        this._map = new Promise(function (resolve) {
+            _this._mapResolver = resolve;
+        });
     }
     GoogleMapsAPIWrapper.prototype.createMap = function (el, mapOptions) {
         var _this = this;
@@ -36,7 +37,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.setMapOptions = function (options) {
-        this._map.then(function (m) { m.setOptions(options); });
+        this._map.then(function (m) {
+            m.setOptions(options);
+        });
     };
     /**
      * Creates a google map marker with the map context
@@ -52,7 +55,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.createInfoWindow = function (options) {
-        return this._map.then(function () { return new google.maps.InfoWindow(options); });
+        return this._map.then(function () {
+            return new google.maps.InfoWindow(options);
+        });
     };
     /**
      * Creates a google.map.Circle for the current map.
@@ -97,14 +102,18 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         return rxjs_Observable.Observable.create(function (observer) {
             _this._map.then(function (m) {
-                m.addListener(eventName, function (arg) { _this._zone.run(function () { return observer.next(arg); }); });
+                m.addListener(eventName, function (arg) {
+                    _this._zone.run(function () { return observer.next(arg); });
+                });
             });
         });
     };
     GoogleMapsAPIWrapper.prototype.setCenter = function (latLng) {
         return this._map.then(function (map) { return map.setCenter(latLng); });
     };
-    GoogleMapsAPIWrapper.prototype.getZoom = function () { return this._map.then(function (map) { return map.getZoom(); }); };
+    GoogleMapsAPIWrapper.prototype.getZoom = function () {
+        return this._map.then(function (map) { return map.getZoom(); });
+    };
     GoogleMapsAPIWrapper.prototype.getBounds = function () {
         return this._map.then(function (map) { return map.getBounds(); });
     };
@@ -132,7 +141,9 @@ var GoogleMapsAPIWrapper = (function () {
     /**
      * Returns the native Google Maps Map instance. Be careful when using this instance directly.
      */
-    GoogleMapsAPIWrapper.prototype.getNativeMap = function () { return this._map; };
+    GoogleMapsAPIWrapper.prototype.getNativeMap = function () {
+        return this._map;
+    };
     /**
      * Triggers the given event name on the map instance.
      */
@@ -196,19 +207,29 @@ var CircleManager = (function () {
         return this._circles.get(circle).then(function (c) { return c.getRadius(); });
     };
     CircleManager.prototype.setCenter = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setCenter({ lat: circle.latitude, lng: circle.longitude }); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setCenter({ lat: circle.latitude, lng: circle.longitude });
+        });
     };
     CircleManager.prototype.setEditable = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setEditable(circle.editable); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setEditable(circle.editable);
+        });
     };
     CircleManager.prototype.setDraggable = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setDraggable(circle.draggable); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setDraggable(circle.draggable);
+        });
     };
     CircleManager.prototype.setVisible = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setVisible(circle.visible); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setVisible(circle.visible);
+        });
     };
     CircleManager.prototype.setRadius = function (circle) {
-        return this._circles.get(circle).then(function (c) { return c.setRadius(circle.radius); });
+        return this._circles.get(circle).then(function (c) {
+            return c.setRadius(circle.radius);
+        });
     };
     CircleManager.prototype.createEventObservable = function (eventName, circle) {
         var _this = this;
@@ -234,6 +255,622 @@ CircleManager.ctorParameters = function () { return [
     { type: GoogleMapsAPIWrapper, },
     { type: _angular_core.NgZone, },
 ]; };
+
+var AgmCircle = (function () {
+    function AgmCircle(_manager) {
+        this._manager = _manager;
+        /**
+         * Indicates whether this Circle handles mouse events. Defaults to true.
+         */
+        this.clickable = true;
+        /**
+         * If set to true, the user can drag this circle over the map. Defaults to false.
+         */
+        // tslint:disable-next-line:no-input-rename
+        this.draggable = false;
+        /**
+         * If set to true, the user can edit this circle by dragging the control points shown at
+         * the center and around the circumference of the circle. Defaults to false.
+         */
+        this.editable = false;
+        /**
+         * The radius in meters on the Earth's surface.
+         */
+        this.radius = 0;
+        /**
+         * The stroke position. Defaults to CENTER.
+         * This property is not supported on Internet Explorer 8 and earlier.
+         */
+        this.strokePosition = 'CENTER';
+        /**
+         * The stroke width in pixels.
+         */
+        this.strokeWeight = 0;
+        /**
+         * Whether this circle is visible on the map. Defaults to true.
+         */
+        this.visible = true;
+        /**
+         * This event is fired when the circle's center is changed.
+         */
+        this.centerChange = new _angular_core.EventEmitter();
+        /**
+         * This event emitter gets emitted when the user clicks on the circle.
+         */
+        this.circleClick = new _angular_core.EventEmitter();
+        /**
+         * This event emitter gets emitted when the user clicks on the circle.
+         */
+        this.circleDblClick = new _angular_core.EventEmitter();
+        /**
+         * This event is repeatedly fired while the user drags the circle.
+         */
+        this.drag = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the user stops dragging the circle.
+         */
+        this.dragEnd = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the user starts dragging the circle.
+         */
+        this.dragStart = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the DOM mousedown event is fired on the circle.
+         */
+        this.mouseDown = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the DOM mousemove event is fired on the circle.
+         */
+        this.mouseMove = new _angular_core.EventEmitter();
+        /**
+         * This event is fired on circle mouseout.
+         */
+        this.mouseOut = new _angular_core.EventEmitter();
+        /**
+         * This event is fired on circle mouseover.
+         */
+        this.mouseOver = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the DOM mouseup event is fired on the circle.
+         */
+        this.mouseUp = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the circle's radius is changed.
+         */
+        this.radiusChange = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the circle is right-clicked on.
+         */
+        this.rightClick = new _angular_core.EventEmitter();
+        this._circleAddedToManager = false;
+        this._eventSubscriptions = [];
+    }
+    /** @internal */
+    AgmCircle.prototype.ngOnInit = function () {
+        this._manager.addCircle(this);
+        this._circleAddedToManager = true;
+        this._registerEventListeners();
+    };
+    /** @internal */
+    AgmCircle.prototype.ngOnChanges = function (changes) {
+        if (!this._circleAddedToManager) {
+            return;
+        }
+        if (changes['latitude'] || changes['longitude']) {
+            this._manager.setCenter(this);
+        }
+        if (changes['editable']) {
+            this._manager.setEditable(this);
+        }
+        if (changes['draggable']) {
+            this._manager.setDraggable(this);
+        }
+        if (changes['visible']) {
+            this._manager.setVisible(this);
+        }
+        if (changes['radius']) {
+            this._manager.setRadius(this);
+        }
+        this._updateCircleOptionsChanges(changes);
+    };
+    AgmCircle.prototype._updateCircleOptionsChanges = function (changes) {
+        var options = {};
+        var optionKeys = Object.keys(changes).filter(function (k) { return AgmCircle._mapOptions.indexOf(k) !== -1; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
+        if (optionKeys.length > 0) {
+            this._manager.setOptions(this, options);
+        }
+    };
+    AgmCircle.prototype._registerEventListeners = function () {
+        var _this = this;
+        var events = new Map();
+        events.set('center_changed', this.centerChange);
+        events.set('click', this.circleClick);
+        events.set('dblclick', this.circleDblClick);
+        events.set('drag', this.drag);
+        events.set('dragend', this.dragEnd);
+        events.set('dragStart', this.dragStart);
+        events.set('mousedown', this.mouseDown);
+        events.set('mousemove', this.mouseMove);
+        events.set('mouseout', this.mouseOut);
+        events.set('mouseover', this.mouseOver);
+        events.set('mouseup', this.mouseUp);
+        events.set('radius_changed', this.radiusChange);
+        events.set('rightclick', this.rightClick);
+        events.forEach(function (eventEmitter, eventName) {
+            _this._eventSubscriptions.push(_this._manager.createEventObservable(eventName, _this).subscribe(function (value) {
+                switch (eventName) {
+                    case 'radius_changed':
+                        _this._manager.getRadius(_this).then(function (radius) { return eventEmitter.emit(radius); });
+                        break;
+                    case 'center_changed':
+                        _this._manager.getCenter(_this).then(function (center) {
+                            return eventEmitter.emit({ lat: center.lat(), lng: center.lng() });
+                        });
+                        break;
+                    default:
+                        eventEmitter.emit({ coords: { lat: value.latLng.lat(), lng: value.latLng.lng() } });
+                }
+            }));
+        });
+    };
+    /** @internal */
+    AgmCircle.prototype.ngOnDestroy = function () {
+        this._eventSubscriptions.forEach(function (s) {
+            s.unsubscribe();
+        });
+        this._eventSubscriptions = null;
+        this._manager.removeCircle(this);
+    };
+    /**
+     * Gets the LatLngBounds of this Circle.
+     */
+    AgmCircle.prototype.getBounds = function () {
+        return this._manager.getBounds(this);
+    };
+    AgmCircle.prototype.getCenter = function () {
+        return this._manager.getCenter(this);
+    };
+    return AgmCircle;
+}());
+AgmCircle._mapOptions = [
+    'fillColor', 'fillOpacity', 'strokeColor', 'strokeOpacity', 'strokePosition', 'strokeWeight',
+    'visible', 'zIndex', 'clickable'
+];
+AgmCircle.decorators = [
+    { type: _angular_core.Directive, args: [{ selector: 'agm-circle' },] },
+];
+/** @nocollapse */
+AgmCircle.ctorParameters = function () { return [
+    { type: CircleManager, },
+]; };
+AgmCircle.propDecorators = {
+    'latitude': [{ type: _angular_core.Input },],
+    'longitude': [{ type: _angular_core.Input },],
+    'clickable': [{ type: _angular_core.Input },],
+    'draggable': [{ type: _angular_core.Input, args: ['circleDraggable',] },],
+    'editable': [{ type: _angular_core.Input },],
+    'fillColor': [{ type: _angular_core.Input },],
+    'fillOpacity': [{ type: _angular_core.Input },],
+    'radius': [{ type: _angular_core.Input },],
+    'strokeColor': [{ type: _angular_core.Input },],
+    'strokeOpacity': [{ type: _angular_core.Input },],
+    'strokePosition': [{ type: _angular_core.Input },],
+    'strokeWeight': [{ type: _angular_core.Input },],
+    'visible': [{ type: _angular_core.Input },],
+    'zIndex': [{ type: _angular_core.Input },],
+    'centerChange': [{ type: _angular_core.Output },],
+    'circleClick': [{ type: _angular_core.Output },],
+    'circleDblClick': [{ type: _angular_core.Output },],
+    'drag': [{ type: _angular_core.Output },],
+    'dragEnd': [{ type: _angular_core.Output },],
+    'dragStart': [{ type: _angular_core.Output },],
+    'mouseDown': [{ type: _angular_core.Output },],
+    'mouseMove': [{ type: _angular_core.Output },],
+    'mouseOut': [{ type: _angular_core.Output },],
+    'mouseOver': [{ type: _angular_core.Output },],
+    'mouseUp': [{ type: _angular_core.Output },],
+    'radiusChange': [{ type: _angular_core.Output },],
+    'rightClick': [{ type: _angular_core.Output },],
+};
+
+/**
+ * Manages all Data Layers for a Google Map instance.
+ */
+var DataLayerManager = (function () {
+    function DataLayerManager(_wrapper, _zone) {
+        this._wrapper = _wrapper;
+        this._zone = _zone;
+        this._layers = new Map();
+    }
+    /**
+     * Adds a new Data Layer to the map.
+     */
+    DataLayerManager.prototype.addDataLayer = function (layer) {
+        var _this = this;
+        var newLayer = this._wrapper.createDataLayer({ style: layer.style }).then(function (d) {
+            if (layer.geoJson) {
+                _this.getDataFeatures(d, layer.geoJson).then(function (features) { return d.features = features; });
+            }
+            return d;
+        });
+        this._layers.set(layer, newLayer);
+    };
+    DataLayerManager.prototype.deleteDataLayer = function (layer) {
+        var _this = this;
+        this._layers.get(layer).then(function (l) {
+            l.setMap(null);
+            _this._layers.delete(layer);
+        });
+    };
+    DataLayerManager.prototype.updateGeoJson = function (layer, geoJson) {
+        var _this = this;
+        this._layers.get(layer).then(function (l) {
+            l.forEach(function (feature) {
+                l.remove(feature);
+                var index = l.features.indexOf(feature, 0);
+                if (index > -1) {
+                    l.features.splice(index, 1);
+                }
+            });
+            _this.getDataFeatures(l, geoJson).then(function (features) { return l.features = features; });
+        });
+    };
+    DataLayerManager.prototype.setDataOptions = function (layer, options) {
+        this._layers.get(layer).then(function (l) {
+            l.setControlPosition(options.controlPosition);
+            l.setControls(options.controls);
+            l.setDrawingMode(options.drawingMode);
+            l.setStyle(options.style);
+        });
+    };
+    /**
+     * Creates a Google Maps event listener for the given DataLayer as an Observable
+     */
+    DataLayerManager.prototype.createEventObservable = function (eventName, layer) {
+        var _this = this;
+        return rxjs_Observable.Observable.create(function (observer) {
+            _this._layers.get(layer).then(function (d) {
+                d.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
+            });
+        });
+    };
+    /**
+     * Extract features from a geoJson using google.maps Data Class
+     * @param d : google.maps.Data class instance
+     * @param geoJson : url or geojson object
+     */
+    DataLayerManager.prototype.getDataFeatures = function (d, geoJson) {
+        return new Promise(function (resolve, reject) {
+            if (typeof geoJson === 'object') {
+                try {
+                    var features = d.addGeoJson(geoJson);
+                    resolve(features);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }
+            else if (typeof geoJson === 'string') {
+                d.loadGeoJson(geoJson, null, resolve);
+            }
+            else {
+                reject("Impossible to extract features from geoJson: wrong argument type");
+            }
+        });
+    };
+    return DataLayerManager;
+}());
+DataLayerManager.decorators = [
+    { type: _angular_core.Injectable },
+];
+/** @nocollapse */
+DataLayerManager.ctorParameters = function () { return [
+    { type: GoogleMapsAPIWrapper, },
+    { type: _angular_core.NgZone, },
+]; };
+
+var layerId = 0;
+/**
+ * AgmDataLayer enables the user to add data layers to the map.
+ *
+ * ### Example
+ * ```typescript
+ * import { Component } from 'angular2/core';
+ * import { AgmMap, AgmDataLayer } from
+ * 'angular-google-maps/core';
+ *
+ * @Component({
+ *  selector: 'my-map-cmp',
+ *  directives: [AgmMap, AgmDataLayer],
+ *  styles: [`
+ *    .agm-container {
+ *      height: 300px;
+ *    }
+ * `],
+ *  template: `
+ * <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom">
+ * 	  <agm-data-layer [geoJson]="geoJsonObject" (layerClick)="clicked($event)"
+ * [style]="styleFunc">
+ * 	  </agm-data-layer>
+ * </agm-map>
+ *  `
+ * })
+ * export class MyMapCmp {
+ *   lat: number = -25.274449;
+ *   lng: number = 133.775060;
+ *   zoom: number = 5;
+ *
+ * clicked(clickEvent) {
+ *    console.log(clickEvent);
+ *  }
+ *
+ *  styleFunc(feature) {
+ *    return ({
+ *      clickable: false,
+ *      fillColor: feature.getProperty('color'),
+ *      strokeWeight: 1
+ *    });
+ *  }
+ *
+ *  geoJsonObject: Object = {
+ *    "type": "FeatureCollection",
+ *    "features": [
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "G",
+ *          "color": "blue",
+ *          "rank": "7",
+ *          "ascii": "71"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [123.61, -22.14], [122.38, -21.73], [121.06, -21.69], [119.66, -22.22], [119.00,
+ * -23.40],
+ *              [118.65, -24.76], [118.43, -26.07], [118.78, -27.56], [119.22, -28.57], [120.23,
+ * -29.49],
+ *              [121.77, -29.87], [123.57, -29.64], [124.45, -29.03], [124.71, -27.95], [124.80,
+ * -26.70],
+ *              [124.80, -25.60], [123.61, -25.64], [122.56, -25.64], [121.72, -25.72], [121.81,
+ * -26.62],
+ *              [121.86, -26.98], [122.60, -26.90], [123.57, -27.05], [123.57, -27.68], [123.35,
+ * -28.18],
+ *              [122.51, -28.38], [121.77, -28.26], [121.02, -27.91], [120.49, -27.21], [120.14,
+ * -26.50],
+ *              [120.10, -25.64], [120.27, -24.52], [120.67, -23.68], [121.72, -23.32], [122.43,
+ * -23.48],
+ *              [123.04, -24.04], [124.54, -24.28], [124.58, -23.20], [123.61, -22.14]
+ *            ]
+ *          ]
+ *        }
+ *      },
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "o",
+ *          "color": "red",
+ *          "rank": "15",
+ *          "ascii": "111"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [128.84, -25.76], [128.18, -25.60], [127.96, -25.52], [127.88, -25.52], [127.70,
+ * -25.60],
+ *              [127.26, -25.79], [126.60, -26.11], [126.16, -26.78], [126.12, -27.68], [126.21,
+ * -28.42],
+ *              [126.69, -29.49], [127.74, -29.80], [128.80, -29.72], [129.41, -29.03], [129.72,
+ * -27.95],
+ *              [129.68, -27.21], [129.33, -26.23], [128.84, -25.76]
+ *            ],
+ *            [
+ *              [128.45, -27.44], [128.32, -26.94], [127.70, -26.82], [127.35, -27.05], [127.17,
+ * -27.80],
+ *              [127.57, -28.22], [128.10, -28.42], [128.49, -27.80], [128.45, -27.44]
+ *            ]
+ *          ]
+ *        }
+ *      },
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "o",
+ *          "color": "yellow",
+ *          "rank": "15",
+ *          "ascii": "111"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [131.87, -25.76], [131.35, -26.07], [130.95, -26.78], [130.82, -27.64], [130.86,
+ * -28.53],
+ *              [131.26, -29.22], [131.92, -29.76], [132.45, -29.87], [133.06, -29.76], [133.72,
+ * -29.34],
+ *              [134.07, -28.80], [134.20, -27.91], [134.07, -27.21], [133.81, -26.31], [133.37,
+ * -25.83],
+ *              [132.71, -25.64], [131.87, -25.76]
+ *            ],
+ *            [
+ *              [133.15, -27.17], [132.71, -26.86], [132.09, -26.90], [131.74, -27.56], [131.79,
+ * -28.26],
+ *              [132.36, -28.45], [132.93, -28.34], [133.15, -27.76], [133.15, -27.17]
+ *            ]
+ *          ]
+ *        }
+ *      },
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "g",
+ *          "color": "blue",
+ *          "rank": "7",
+ *          "ascii": "103"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [138.12, -25.04], [136.84, -25.16], [135.96, -25.36], [135.26, -25.99], [135,
+ * -26.90],
+ *              [135.04, -27.91], [135.26, -28.88], [136.05, -29.45], [137.02, -29.49], [137.81,
+ * -29.49],
+ *              [137.94, -29.99], [137.90, -31.20], [137.85, -32.24], [136.88, -32.69], [136.45,
+ * -32.36],
+ *              [136.27, -31.80], [134.95, -31.84], [135.17, -32.99], [135.52, -33.43], [136.14,
+ * -33.76],
+ *              [137.06, -33.83], [138.12, -33.65], [138.86, -33.21], [139.30, -32.28], [139.30,
+ * -31.24],
+ *              [139.30, -30.14], [139.21, -28.96], [139.17, -28.22], [139.08, -27.41], [139.08,
+ * -26.47],
+ *              [138.99, -25.40], [138.73, -25.00], [138.12, -25.04]
+ *            ],
+ *            [
+ *              [137.50, -26.54], [136.97, -26.47], [136.49, -26.58], [136.31, -27.13], [136.31,
+ * -27.72],
+ *              [136.58, -27.99], [137.50, -28.03], [137.68, -27.68], [137.59, -26.78], [137.50,
+ * -26.54]
+ *            ]
+ *          ]
+ *        }
+ *      },
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "l",
+ *          "color": "green",
+ *          "rank": "12",
+ *          "ascii": "108"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [140.14, -21.04], [140.31, -29.42], [141.67, -29.49], [141.59, -20.92], [140.14,
+ * -21.04]
+ *            ]
+ *          ]
+ *        }
+ *      },
+ *      {
+ *        "type": "Feature",
+ *        "properties": {
+ *          "letter": "e",
+ *          "color": "red",
+ *          "rank": "5",
+ *          "ascii": "101"
+ *        },
+ *        "geometry": {
+ *          "type": "Polygon",
+ *          "coordinates": [
+ *            [
+ *              [144.14, -27.41], [145.67, -27.52], [146.86, -27.09], [146.82, -25.64], [146.25,
+ * -25.04],
+ *              [145.45, -24.68], [144.66, -24.60], [144.09, -24.76], [143.43, -25.08], [142.99,
+ * -25.40],
+ *              [142.64, -26.03], [142.64, -27.05], [142.64, -28.26], [143.30, -29.11], [144.18,
+ * -29.57],
+ *              [145.41, -29.64], [146.46, -29.19], [146.64, -28.72], [146.82, -28.14], [144.84,
+ * -28.42],
+ *              [144.31, -28.26], [144.14, -27.41]
+ *            ],
+ *            [
+ *              [144.18, -26.39], [144.53, -26.58], [145.19, -26.62], [145.72, -26.35], [145.81,
+ * -25.91],
+ *              [145.41, -25.68], [144.97, -25.68], [144.49, -25.64], [144, -25.99], [144.18,
+ * -26.39]
+ *            ]
+ *          ]
+ *        }
+ *      }
+ *    ]
+ *  };
+ * }
+ * ```
+ */
+var AgmDataLayer = (function () {
+    function AgmDataLayer(_manager) {
+        this._manager = _manager;
+        this._addedToManager = false;
+        this._id = (layerId++).toString();
+        this._subscriptions = [];
+        /**
+         * This event is fired when a feature in the layer is clicked.
+         */
+        this.layerClick = new _angular_core.EventEmitter();
+        /**
+         * The geoJson to be displayed
+         */
+        this.geoJson = null;
+    }
+    AgmDataLayer.prototype.ngOnInit = function () {
+        if (this._addedToManager) {
+            return;
+        }
+        this._manager.addDataLayer(this);
+        this._addedToManager = true;
+        this._addEventListeners();
+    };
+    AgmDataLayer.prototype._addEventListeners = function () {
+        var _this = this;
+        var listeners = [
+            { name: 'click', handler: function (ev) { return _this.layerClick.emit(ev); } },
+        ];
+        listeners.forEach(function (obj) {
+            var os = _this._manager.createEventObservable(obj.name, _this).subscribe(obj.handler);
+            _this._subscriptions.push(os);
+        });
+    };
+    /** @internal */
+    AgmDataLayer.prototype.id = function () {
+        return this._id;
+    };
+    /** @internal */
+    AgmDataLayer.prototype.toString = function () {
+        return "AgmDataLayer-" + this._id.toString();
+    };
+    /** @internal */
+    AgmDataLayer.prototype.ngOnDestroy = function () {
+        this._manager.deleteDataLayer(this);
+        // unsubscribe all registered observable subscriptions
+        this._subscriptions.forEach(function (s) { return s.unsubscribe(); });
+    };
+    /** @internal */
+    AgmDataLayer.prototype.ngOnChanges = function (changes) {
+        var _this = this;
+        if (!this._addedToManager) {
+            return;
+        }
+        var geoJsonChange = changes['geoJson'];
+        if (geoJsonChange) {
+            this._manager.updateGeoJson(this, geoJsonChange.currentValue);
+        }
+        var dataOptions = {};
+        AgmDataLayer._dataOptionsAttributes.forEach(function (k) { return dataOptions[k] =
+            changes.hasOwnProperty(k) ? changes[k].currentValue : _this[k]; });
+        this._manager.setDataOptions(this, dataOptions);
+    };
+    return AgmDataLayer;
+}());
+AgmDataLayer._dataOptionsAttributes = ['style'];
+AgmDataLayer.decorators = [
+    { type: _angular_core.Directive, args: [{ selector: 'agm-data-layer' },] },
+];
+/** @nocollapse */
+AgmDataLayer.ctorParameters = function () { return [
+    { type: DataLayerManager, },
+]; };
+AgmDataLayer.propDecorators = {
+    'layerClick': [{ type: _angular_core.Output },],
+    'geoJson': [{ type: _angular_core.Input },],
+    'style': [{ type: _angular_core.Input },],
+};
 
 var MarkerManager = (function () {
     function MarkerManager(_mapsWrapper, _zone) {
@@ -262,7 +899,9 @@ var MarkerManager = (function () {
         return this._markers.get(marker).then(function (m) { return m.setTitle(marker.title); });
     };
     MarkerManager.prototype.updateLabel = function (marker) {
-        return this._markers.get(marker).then(function (m) { m.setLabel(marker.label); });
+        return this._markers.get(marker).then(function (m) {
+            m.setLabel(marker.label);
+        });
     };
     MarkerManager.prototype.updateDraggable = function (marker) {
         return this._markers.get(marker).then(function (m) { return m.setDraggable(marker.draggable); });
@@ -402,6 +1041,321 @@ InfoWindowManager.ctorParameters = function () { return [
     { type: MarkerManager, },
 ]; };
 
+var infoWindowId = 0;
+/**
+ * AgmInfoWindow renders a info window inside a {@link AgmMarker} or standalone.
+ *
+ * ### Example
+ * ```typescript
+ * import { Component } from '@angular/core';
+ *
+ * @Component({
+ *  selector: 'my-map-cmp',
+ *  styles: [`
+ *    .agm-map-container {
+ *      height: 300px;
+ *    }
+ * `],
+ *  template: `
+ *    <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom">
+ *      <agm-marker [latitude]="lat" [longitude]="lng" [label]="'M'">
+ *        <agm-info-window [disableAutoPan]="true">
+ *          Hi, this is the content of the <strong>info window</strong>
+ *        </agm-info-window>
+ *      </agm-marker>
+ *    </agm-map>
+ *  `
+ * })
+ * ```
+ */
+var AgmInfoWindow = (function () {
+    function AgmInfoWindow(_infoWindowManager, _el) {
+        this._infoWindowManager = _infoWindowManager;
+        this._el = _el;
+        /**
+         * Sets the open state for the InfoWindow. You can also call the open() and close() methods.
+         */
+        this.isOpen = false;
+        /**
+         * Emits an event when the info window is closed.
+         */
+        this.infoWindowClose = new _angular_core.EventEmitter();
+        this._infoWindowAddedToManager = false;
+        this._id = (infoWindowId++).toString();
+    }
+    AgmInfoWindow.prototype.ngOnInit = function () {
+        this.content = this._el.nativeElement.querySelector('.agm-info-window-content');
+        this._infoWindowManager.addInfoWindow(this);
+        this._infoWindowAddedToManager = true;
+        this._updateOpenState();
+        this._registerEventListeners();
+    };
+    /** @internal */
+    AgmInfoWindow.prototype.ngOnChanges = function (changes) {
+        if (!this._infoWindowAddedToManager) {
+            return;
+        }
+        if ((changes['latitude'] || changes['longitude']) && typeof this.latitude === 'number' &&
+            typeof this.longitude === 'number') {
+            this._infoWindowManager.setPosition(this);
+        }
+        if (changes['zIndex']) {
+            this._infoWindowManager.setZIndex(this);
+        }
+        if (changes['isOpen']) {
+            this._updateOpenState();
+        }
+        this._setInfoWindowOptions(changes);
+    };
+    AgmInfoWindow.prototype._registerEventListeners = function () {
+        var _this = this;
+        this._infoWindowManager.createEventObservable('closeclick', this).subscribe(function () {
+            _this.isOpen = false;
+            _this.infoWindowClose.emit();
+        });
+    };
+    AgmInfoWindow.prototype._updateOpenState = function () {
+        this.isOpen ? this.open() : this.close();
+    };
+    AgmInfoWindow.prototype._setInfoWindowOptions = function (changes) {
+        var options = {};
+        var optionKeys = Object.keys(changes).filter(function (k) { return AgmInfoWindow._infoWindowOptionsInputs.indexOf(k) !== -1; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
+        this._infoWindowManager.setOptions(this, options);
+    };
+    /**
+     * Opens the info window.
+     */
+    AgmInfoWindow.prototype.open = function () {
+        return this._infoWindowManager.open(this);
+    };
+    /**
+     * Closes the info window.
+     */
+    AgmInfoWindow.prototype.close = function () {
+        var _this = this;
+        return this._infoWindowManager.close(this).then(function () {
+            _this.infoWindowClose.emit();
+        });
+    };
+    /** @internal */
+    AgmInfoWindow.prototype.id = function () {
+        return this._id;
+    };
+    /** @internal */
+    AgmInfoWindow.prototype.toString = function () {
+        return 'AgmInfoWindow-' + this._id.toString();
+    };
+    /** @internal */
+    AgmInfoWindow.prototype.ngOnDestroy = function () {
+        this._infoWindowManager.deleteInfoWindow(this);
+    };
+    return AgmInfoWindow;
+}());
+AgmInfoWindow._infoWindowOptionsInputs = ['disableAutoPan', 'maxWidth'];
+AgmInfoWindow.decorators = [
+    { type: _angular_core.Component, args: [{
+                selector: 'agm-info-window',
+                template: "<div class='agm-info-window-content'>\n      <ng-content></ng-content>\n    </div>\n  "
+            },] },
+];
+/** @nocollapse */
+AgmInfoWindow.ctorParameters = function () { return [
+    { type: InfoWindowManager, },
+    { type: _angular_core.ElementRef, },
+]; };
+AgmInfoWindow.propDecorators = {
+    'latitude': [{ type: _angular_core.Input },],
+    'longitude': [{ type: _angular_core.Input },],
+    'disableAutoPan': [{ type: _angular_core.Input },],
+    'zIndex': [{ type: _angular_core.Input },],
+    'maxWidth': [{ type: _angular_core.Input },],
+    'isOpen': [{ type: _angular_core.Input },],
+    'infoWindowClose': [{ type: _angular_core.Output },],
+};
+
+/**
+ * Manages all KML Layers for a Google Map instance.
+ */
+var KmlLayerManager = (function () {
+    function KmlLayerManager(_wrapper, _zone) {
+        this._wrapper = _wrapper;
+        this._zone = _zone;
+        this._layers = new Map();
+    }
+    /**
+     * Adds a new KML Layer to the map.
+     */
+    KmlLayerManager.prototype.addKmlLayer = function (layer) {
+        var newLayer = this._wrapper.getNativeMap().then(function (m) {
+            return new google.maps.KmlLayer({
+                clickable: layer.clickable,
+                map: m,
+                preserveViewport: layer.preserveViewport,
+                screenOverlays: layer.screenOverlays,
+                suppressInfoWindows: layer.suppressInfoWindows,
+                url: layer.url,
+                zIndex: layer.zIndex
+            });
+        });
+        this._layers.set(layer, newLayer);
+    };
+    KmlLayerManager.prototype.setOptions = function (layer, options) {
+        this._layers.get(layer).then(function (l) { return l.setOptions(options); });
+    };
+    KmlLayerManager.prototype.deleteKmlLayer = function (layer) {
+        var _this = this;
+        this._layers.get(layer).then(function (l) {
+            l.setMap(null);
+            _this._layers.delete(layer);
+        });
+    };
+    /**
+     * Creates a Google Maps event listener for the given KmlLayer as an Observable
+     */
+    KmlLayerManager.prototype.createEventObservable = function (eventName, layer) {
+        var _this = this;
+        return rxjs_Observable.Observable.create(function (observer) {
+            _this._layers.get(layer).then(function (m) {
+                m.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
+            });
+        });
+    };
+    return KmlLayerManager;
+}());
+KmlLayerManager.decorators = [
+    { type: _angular_core.Injectable },
+];
+/** @nocollapse */
+KmlLayerManager.ctorParameters = function () { return [
+    { type: GoogleMapsAPIWrapper, },
+    { type: _angular_core.NgZone, },
+]; };
+
+var layerId$1 = 0;
+var AgmKmlLayer = (function () {
+    function AgmKmlLayer(_manager) {
+        this._manager = _manager;
+        this._addedToManager = false;
+        this._id = (layerId$1++).toString();
+        this._subscriptions = [];
+        /**
+         * If true, the layer receives mouse events. Default value is true.
+         */
+        this.clickable = true;
+        /**
+         * By default, the input map is centered and zoomed to the bounding box of the contents of the
+         * layer.
+         * If this option is set to true, the viewport is left unchanged, unless the map's center and zoom
+         * were never set.
+         */
+        this.preserveViewport = false;
+        /**
+         * Whether to render the screen overlays. Default true.
+         */
+        this.screenOverlays = true;
+        /**
+         * Suppress the rendering of info windows when layer features are clicked.
+         */
+        this.suppressInfoWindows = false;
+        /**
+         * The URL of the KML document to display.
+         */
+        this.url = null;
+        /**
+         * The z-index of the layer.
+         */
+        this.zIndex = null;
+        /**
+         * This event is fired when a feature in the layer is clicked.
+         */
+        this.layerClick = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the KML layers default viewport has changed.
+         */
+        this.defaultViewportChange = new _angular_core.EventEmitter();
+        /**
+         * This event is fired when the KML layer has finished loading.
+         * At this point it is safe to read the status property to determine if the layer loaded
+         * successfully.
+         */
+        this.statusChange = new _angular_core.EventEmitter();
+    }
+    AgmKmlLayer.prototype.ngOnInit = function () {
+        if (this._addedToManager) {
+            return;
+        }
+        this._manager.addKmlLayer(this);
+        this._addedToManager = true;
+        this._addEventListeners();
+    };
+    AgmKmlLayer.prototype.ngOnChanges = function (changes) {
+        if (!this._addedToManager) {
+            return;
+        }
+        this._updatePolygonOptions(changes);
+    };
+    AgmKmlLayer.prototype._updatePolygonOptions = function (changes) {
+        var options = Object.keys(changes)
+            .filter(function (k) { return AgmKmlLayer._kmlLayerOptions.indexOf(k) !== -1; })
+            .reduce(function (obj, k) {
+            obj[k] = changes[k].currentValue;
+            return obj;
+        }, {});
+        if (Object.keys(options).length > 0) {
+            this._manager.setOptions(this, options);
+        }
+    };
+    AgmKmlLayer.prototype._addEventListeners = function () {
+        var _this = this;
+        var listeners = [
+            { name: 'click', handler: function (ev) { return _this.layerClick.emit(ev); } },
+            { name: 'defaultviewport_changed', handler: function () { return _this.defaultViewportChange.emit(); } },
+            { name: 'status_changed', handler: function () { return _this.statusChange.emit(); } },
+        ];
+        listeners.forEach(function (obj) {
+            var os = _this._manager.createEventObservable(obj.name, _this).subscribe(obj.handler);
+            _this._subscriptions.push(os);
+        });
+    };
+    /** @internal */
+    AgmKmlLayer.prototype.id = function () {
+        return this._id;
+    };
+    /** @internal */
+    AgmKmlLayer.prototype.toString = function () {
+        return "AgmKmlLayer-" + this._id.toString();
+    };
+    /** @internal */
+    AgmKmlLayer.prototype.ngOnDestroy = function () {
+        this._manager.deleteKmlLayer(this);
+        // unsubscribe all registered observable subscriptions
+        this._subscriptions.forEach(function (s) { return s.unsubscribe(); });
+    };
+    return AgmKmlLayer;
+}());
+AgmKmlLayer._kmlLayerOptions = ['clickable', 'preserveViewport', 'screenOverlays', 'suppressInfoWindows', 'url', 'zIndex'];
+AgmKmlLayer.decorators = [
+    { type: _angular_core.Directive, args: [{ selector: 'agm-kml-layer' },] },
+];
+/** @nocollapse */
+AgmKmlLayer.ctorParameters = function () { return [
+    { type: KmlLayerManager, },
+]; };
+AgmKmlLayer.propDecorators = {
+    'clickable': [{ type: _angular_core.Input },],
+    'preserveViewport': [{ type: _angular_core.Input },],
+    'screenOverlays': [{ type: _angular_core.Input },],
+    'suppressInfoWindows': [{ type: _angular_core.Input },],
+    'url': [{ type: _angular_core.Input },],
+    'zIndex': [{ type: _angular_core.Input },],
+    'layerClick': [{ type: _angular_core.Output },],
+    'defaultViewportChange': [{ type: _angular_core.Output },],
+    'statusChange': [{ type: _angular_core.Output },],
+};
+
 var PolygonManager = (function () {
     function PolygonManager(_mapsWrapper, _zone) {
         this._mapsWrapper = _mapsWrapper;
@@ -431,10 +1385,14 @@ var PolygonManager = (function () {
         if (m == null) {
             return Promise.resolve();
         }
-        return m.then(function (l) { return _this._zone.run(function () { l.setPaths(polygon.paths); }); });
+        return m.then(function (l) { return _this._zone.run(function () {
+            l.setPaths(polygon.paths);
+        }); });
     };
     PolygonManager.prototype.setPolygonOptions = function (path, options) {
-        return this._polygons.get(path).then(function (l) { l.setOptions(options); });
+        return this._polygons.get(path).then(function (l) {
+            l.setOptions(options);
+        });
     };
     PolygonManager.prototype.deletePolygon = function (paths) {
         var _this = this;
@@ -503,10 +1461,16 @@ var PolylineManager = (function () {
         if (m == null) {
             return Promise.resolve();
         }
-        return m.then(function (l) { return _this._zone.run(function () { l.setPath(path); }); });
+        return m.then(function (l) {
+            return _this._zone.run(function () {
+                l.setPath(path);
+            });
+        });
     };
     PolylineManager.prototype.setPolylineOptions = function (line, options) {
-        return this._polylines.get(line).then(function (l) { l.setOptions(options); });
+        return this._polylines.get(line).then(function (l) {
+            l.setOptions(options);
+        });
     };
     PolylineManager.prototype.deletePolyline = function (line) {
         var _this = this;
@@ -536,163 +1500,6 @@ PolylineManager.decorators = [
 ];
 /** @nocollapse */
 PolylineManager.ctorParameters = function () { return [
-    { type: GoogleMapsAPIWrapper, },
-    { type: _angular_core.NgZone, },
-]; };
-
-/**
- * Manages all KML Layers for a Google Map instance.
- */
-var KmlLayerManager = (function () {
-    function KmlLayerManager(_wrapper, _zone) {
-        this._wrapper = _wrapper;
-        this._zone = _zone;
-        this._layers = new Map();
-    }
-    /**
-     * Adds a new KML Layer to the map.
-     */
-    KmlLayerManager.prototype.addKmlLayer = function (layer) {
-        var newLayer = this._wrapper.getNativeMap().then(function (m) {
-            return new google.maps.KmlLayer({
-                clickable: layer.clickable,
-                map: m,
-                preserveViewport: layer.preserveViewport,
-                screenOverlays: layer.screenOverlays,
-                suppressInfoWindows: layer.suppressInfoWindows,
-                url: layer.url,
-                zIndex: layer.zIndex
-            });
-        });
-        this._layers.set(layer, newLayer);
-    };
-    KmlLayerManager.prototype.setOptions = function (layer, options) {
-        this._layers.get(layer).then(function (l) { return l.setOptions(options); });
-    };
-    KmlLayerManager.prototype.deleteKmlLayer = function (layer) {
-        var _this = this;
-        this._layers.get(layer).then(function (l) {
-            l.setMap(null);
-            _this._layers.delete(layer);
-        });
-    };
-    /**
-     * Creates a Google Maps event listener for the given KmlLayer as an Observable
-     */
-    KmlLayerManager.prototype.createEventObservable = function (eventName, layer) {
-        var _this = this;
-        return rxjs_Observable.Observable.create(function (observer) {
-            _this._layers.get(layer).then(function (m) {
-                m.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
-            });
-        });
-    };
-    return KmlLayerManager;
-}());
-KmlLayerManager.decorators = [
-    { type: _angular_core.Injectable },
-];
-/** @nocollapse */
-KmlLayerManager.ctorParameters = function () { return [
-    { type: GoogleMapsAPIWrapper, },
-    { type: _angular_core.NgZone, },
-]; };
-
-/**
- * Manages all Data Layers for a Google Map instance.
- */
-var DataLayerManager = (function () {
-    function DataLayerManager(_wrapper, _zone) {
-        this._wrapper = _wrapper;
-        this._zone = _zone;
-        this._layers = new Map();
-    }
-    /**
-     * Adds a new Data Layer to the map.
-     */
-    DataLayerManager.prototype.addDataLayer = function (layer) {
-        var _this = this;
-        var newLayer = this._wrapper.createDataLayer({
-            style: layer.style
-        })
-            .then(function (d) {
-            if (layer.geoJson) {
-                _this.getDataFeatures(d, layer.geoJson).then(function (features) { return d.features = features; });
-            }
-            return d;
-        });
-        this._layers.set(layer, newLayer);
-    };
-    DataLayerManager.prototype.deleteDataLayer = function (layer) {
-        var _this = this;
-        this._layers.get(layer).then(function (l) {
-            l.setMap(null);
-            _this._layers.delete(layer);
-        });
-    };
-    DataLayerManager.prototype.updateGeoJson = function (layer, geoJson) {
-        var _this = this;
-        this._layers.get(layer).then(function (l) {
-            l.forEach(function (feature) {
-                l.remove(feature);
-                var index = l.features.indexOf(feature, 0);
-                if (index > -1) {
-                    l.features.splice(index, 1);
-                }
-            });
-            _this.getDataFeatures(l, geoJson).then(function (features) { return l.features = features; });
-        });
-    };
-    DataLayerManager.prototype.setDataOptions = function (layer, options) {
-        this._layers.get(layer).then(function (l) {
-            l.setControlPosition(options.controlPosition);
-            l.setControls(options.controls);
-            l.setDrawingMode(options.drawingMode);
-            l.setStyle(options.style);
-        });
-    };
-    /**
-     * Creates a Google Maps event listener for the given DataLayer as an Observable
-     */
-    DataLayerManager.prototype.createEventObservable = function (eventName, layer) {
-        var _this = this;
-        return rxjs_Observable.Observable.create(function (observer) {
-            _this._layers.get(layer).then(function (d) {
-                d.addListener(eventName, function (e) { return _this._zone.run(function () { return observer.next(e); }); });
-            });
-        });
-    };
-    /**
-     * Extract features from a geoJson using google.maps Data Class
-     * @param d : google.maps.Data class instance
-     * @param geoJson : url or geojson object
-     */
-    DataLayerManager.prototype.getDataFeatures = function (d, geoJson) {
-        return new Promise(function (resolve, reject) {
-            if (typeof geoJson === 'object') {
-                try {
-                    var features = d.addGeoJson(geoJson);
-                    resolve(features);
-                }
-                catch (e) {
-                    reject(e);
-                }
-            }
-            else if (typeof geoJson === 'string') {
-                d.loadGeoJson(geoJson, null, resolve);
-            }
-            else {
-                reject("Impossible to extract features from geoJson: wrong argument type");
-            }
-        });
-    };
-    return DataLayerManager;
-}());
-DataLayerManager.decorators = [
-    { type: _angular_core.Injectable },
-];
-/** @nocollapse */
-DataLayerManager.ctorParameters = function () { return [
     { type: GoogleMapsAPIWrapper, },
     { type: _angular_core.NgZone, },
 ]; };
@@ -816,10 +1623,12 @@ var AgmMap = (function () {
         /**
          * This setting controls how gestures on the map are handled.
          * Allowed values:
-         * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are not handled by the map.)
+         * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are
+         * not handled by the map.)
          * - 'greedy'      (All touch gestures pan or zoom the map.)
          * - 'none'        (The map cannot be panned or zoomed by user gestures.)
-         * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on whether the page is scrollable or not.
+         * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on
+         * whether the page is scrollable or not.
          */
         this.gestureHandling = 'auto';
         this._observableSubscriptions = [];
@@ -872,7 +1681,8 @@ var AgmMap = (function () {
     };
     AgmMap.prototype._initMapInstance = function (el) {
         var _this = this;
-        this._mapsWrapper.createMap(el, {
+        this._mapsWrapper
+            .createMap(el, {
             center: { lat: this.latitude || 0, lng: this.longitude || 0 },
             zoom: this.zoom,
             minZoom: this.minZoom,
@@ -927,12 +1737,15 @@ var AgmMap = (function () {
     AgmMap.prototype._updateMapOptionsChanges = function (changes) {
         var options = {};
         var optionKeys = Object.keys(changes).filter(function (k) { return AgmMap._mapOptionsAttributes.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
         this._mapsWrapper.setMapOptions(options);
     };
     /**
      * Triggers a resize event on the google map instance.
-     * When recenter is true, the of the google map gets called with the current lat/lng values or fitBounds value to recenter the map.
+     * When recenter is true, the of the google map gets called with the current lat/lng values or
+     * fitBounds value to recenter the map.
      * Returns a promise that gets resolved after the event was triggered.
      */
     AgmMap.prototype.triggerResize = function (recenter) {
@@ -1001,14 +1814,18 @@ var AgmMap = (function () {
     AgmMap.prototype._handleBoundsChange = function () {
         var _this = this;
         var s = this._mapsWrapper.subscribeToMapEvent('bounds_changed').subscribe(function () {
-            _this._mapsWrapper.getBounds().then(function (bounds) { _this.boundsChange.emit(bounds); });
+            _this._mapsWrapper.getBounds().then(function (bounds) {
+                _this.boundsChange.emit(bounds);
+            });
         });
         this._observableSubscriptions.push(s);
     };
     AgmMap.prototype._handleMapTypeIdChange = function () {
         var _this = this;
         var s = this._mapsWrapper.subscribeToMapEvent('maptypeid_changed').subscribe(function () {
-            _this._mapsWrapper.getMapTypeId().then(function (mapTypeId) { _this.mapTypeIdChange.emit(mapTypeId); });
+            _this._mapsWrapper.getMapTypeId().then(function (mapTypeId) {
+                _this.mapTypeIdChange.emit(mapTypeId);
+            });
         });
         this._observableSubscriptions.push(s);
     };
@@ -1024,7 +1841,9 @@ var AgmMap = (function () {
     };
     AgmMap.prototype._handleIdleEvent = function () {
         var _this = this;
-        var s = this._mapsWrapper.subscribeToMapEvent('idle').subscribe(function () { _this.idle.emit(void 0); });
+        var s = this._mapsWrapper.subscribeToMapEvent('idle').subscribe(function () {
+            _this.idle.emit(void 0);
+        });
         this._observableSubscriptions.push(s);
     };
     AgmMap.prototype._handleMapMouseEvents = function () {
@@ -1048,12 +1867,33 @@ var AgmMap = (function () {
  * Map option attributes that can change over time
  */
 AgmMap._mapOptionsAttributes = [
-    'disableDoubleClickZoom', 'scrollwheel', 'draggable', 'draggableCursor', 'draggingCursor',
-    'keyboardShortcuts', 'zoomControl', 'zoomControlOptions', 'styles', 'streetViewControl',
-    'streetViewControlOptions', 'zoom', 'mapTypeControl', 'mapTypeControlOptions', 'minZoom',
-    'maxZoom', 'panControl', 'panControlOptions', 'rotateControl', 'rotateControlOptions',
-    'fullscreenControl', 'fullscreenControlOptions', 'scaleControl', 'scaleControlOptions',
-    'mapTypeId', 'clickableIcons', 'gestureHandling'
+    'disableDoubleClickZoom',
+    'scrollwheel',
+    'draggable',
+    'draggableCursor',
+    'draggingCursor',
+    'keyboardShortcuts',
+    'zoomControl',
+    'zoomControlOptions',
+    'styles',
+    'streetViewControl',
+    'streetViewControlOptions',
+    'zoom',
+    'mapTypeControl',
+    'mapTypeControlOptions',
+    'minZoom',
+    'maxZoom',
+    'panControl',
+    'panControlOptions',
+    'rotateControl',
+    'rotateControlOptions',
+    'fullscreenControl',
+    'fullscreenControlOptions',
+    'scaleControl',
+    'scaleControlOptions',
+    'mapTypeId',
+    'clickableIcons',
+    'gestureHandling'
 ];
 AgmMap.decorators = [
     { type: _angular_core.Component, args: [{
@@ -1118,729 +1958,6 @@ AgmMap.propDecorators = {
     'idle': [{ type: _angular_core.Output },],
     'zoomChange': [{ type: _angular_core.Output },],
     'mapReady': [{ type: _angular_core.Output },],
-};
-
-var AgmCircle = (function () {
-    function AgmCircle(_manager) {
-        this._manager = _manager;
-        /**
-         * Indicates whether this Circle handles mouse events. Defaults to true.
-         */
-        this.clickable = true;
-        /**
-         * If set to true, the user can drag this circle over the map. Defaults to false.
-         */
-        // tslint:disable-next-line:no-input-rename
-        this.draggable = false;
-        /**
-         * If set to true, the user can edit this circle by dragging the control points shown at
-         * the center and around the circumference of the circle. Defaults to false.
-         */
-        this.editable = false;
-        /**
-         * The radius in meters on the Earth's surface.
-         */
-        this.radius = 0;
-        /**
-         * The stroke position. Defaults to CENTER.
-         * This property is not supported on Internet Explorer 8 and earlier.
-         */
-        this.strokePosition = 'CENTER';
-        /**
-         * The stroke width in pixels.
-         */
-        this.strokeWeight = 0;
-        /**
-         * Whether this circle is visible on the map. Defaults to true.
-         */
-        this.visible = true;
-        /**
-         * This event is fired when the circle's center is changed.
-         */
-        this.centerChange = new _angular_core.EventEmitter();
-        /**
-         * This event emitter gets emitted when the user clicks on the circle.
-         */
-        this.circleClick = new _angular_core.EventEmitter();
-        /**
-         * This event emitter gets emitted when the user clicks on the circle.
-         */
-        this.circleDblClick = new _angular_core.EventEmitter();
-        /**
-         * This event is repeatedly fired while the user drags the circle.
-         */
-        this.drag = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the user stops dragging the circle.
-         */
-        this.dragEnd = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the user starts dragging the circle.
-         */
-        this.dragStart = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the DOM mousedown event is fired on the circle.
-         */
-        this.mouseDown = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the DOM mousemove event is fired on the circle.
-         */
-        this.mouseMove = new _angular_core.EventEmitter();
-        /**
-         * This event is fired on circle mouseout.
-         */
-        this.mouseOut = new _angular_core.EventEmitter();
-        /**
-         * This event is fired on circle mouseover.
-         */
-        this.mouseOver = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the DOM mouseup event is fired on the circle.
-         */
-        this.mouseUp = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the circle's radius is changed.
-         */
-        this.radiusChange = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the circle is right-clicked on.
-         */
-        this.rightClick = new _angular_core.EventEmitter();
-        this._circleAddedToManager = false;
-        this._eventSubscriptions = [];
-    }
-    /** @internal */
-    AgmCircle.prototype.ngOnInit = function () {
-        this._manager.addCircle(this);
-        this._circleAddedToManager = true;
-        this._registerEventListeners();
-    };
-    /** @internal */
-    AgmCircle.prototype.ngOnChanges = function (changes) {
-        if (!this._circleAddedToManager) {
-            return;
-        }
-        if (changes['latitude'] || changes['longitude']) {
-            this._manager.setCenter(this);
-        }
-        if (changes['editable']) {
-            this._manager.setEditable(this);
-        }
-        if (changes['draggable']) {
-            this._manager.setDraggable(this);
-        }
-        if (changes['visible']) {
-            this._manager.setVisible(this);
-        }
-        if (changes['radius']) {
-            this._manager.setRadius(this);
-        }
-        this._updateCircleOptionsChanges(changes);
-    };
-    AgmCircle.prototype._updateCircleOptionsChanges = function (changes) {
-        var options = {};
-        var optionKeys = Object.keys(changes).filter(function (k) { return AgmCircle._mapOptions.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
-        if (optionKeys.length > 0) {
-            this._manager.setOptions(this, options);
-        }
-    };
-    AgmCircle.prototype._registerEventListeners = function () {
-        var _this = this;
-        var events = new Map();
-        events.set('center_changed', this.centerChange);
-        events.set('click', this.circleClick);
-        events.set('dblclick', this.circleDblClick);
-        events.set('drag', this.drag);
-        events.set('dragend', this.dragEnd);
-        events.set('dragStart', this.dragStart);
-        events.set('mousedown', this.mouseDown);
-        events.set('mousemove', this.mouseMove);
-        events.set('mouseout', this.mouseOut);
-        events.set('mouseover', this.mouseOver);
-        events.set('mouseup', this.mouseUp);
-        events.set('radius_changed', this.radiusChange);
-        events.set('rightclick', this.rightClick);
-        events.forEach(function (eventEmitter, eventName) {
-            _this._eventSubscriptions.push(_this._manager.createEventObservable(eventName, _this).subscribe(function (value) {
-                switch (eventName) {
-                    case 'radius_changed':
-                        _this._manager.getRadius(_this).then(function (radius) { return eventEmitter.emit(radius); });
-                        break;
-                    case 'center_changed':
-                        _this._manager.getCenter(_this).then(function (center) {
-                            return eventEmitter.emit({ lat: center.lat(), lng: center.lng() });
-                        });
-                        break;
-                    default:
-                        eventEmitter.emit({ coords: { lat: value.latLng.lat(), lng: value.latLng.lng() } });
-                }
-            }));
-        });
-    };
-    /** @internal */
-    AgmCircle.prototype.ngOnDestroy = function () {
-        this._eventSubscriptions.forEach(function (s) { s.unsubscribe(); });
-        this._eventSubscriptions = null;
-        this._manager.removeCircle(this);
-    };
-    /**
-     * Gets the LatLngBounds of this Circle.
-     */
-    AgmCircle.prototype.getBounds = function () { return this._manager.getBounds(this); };
-    AgmCircle.prototype.getCenter = function () { return this._manager.getCenter(this); };
-    return AgmCircle;
-}());
-AgmCircle._mapOptions = [
-    'fillColor', 'fillOpacity', 'strokeColor', 'strokeOpacity', 'strokePosition', 'strokeWeight',
-    'visible', 'zIndex', 'clickable'
-];
-AgmCircle.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-circle'
-            },] },
-];
-/** @nocollapse */
-AgmCircle.ctorParameters = function () { return [
-    { type: CircleManager, },
-]; };
-AgmCircle.propDecorators = {
-    'latitude': [{ type: _angular_core.Input },],
-    'longitude': [{ type: _angular_core.Input },],
-    'clickable': [{ type: _angular_core.Input },],
-    'draggable': [{ type: _angular_core.Input, args: ['circleDraggable',] },],
-    'editable': [{ type: _angular_core.Input },],
-    'fillColor': [{ type: _angular_core.Input },],
-    'fillOpacity': [{ type: _angular_core.Input },],
-    'radius': [{ type: _angular_core.Input },],
-    'strokeColor': [{ type: _angular_core.Input },],
-    'strokeOpacity': [{ type: _angular_core.Input },],
-    'strokePosition': [{ type: _angular_core.Input },],
-    'strokeWeight': [{ type: _angular_core.Input },],
-    'visible': [{ type: _angular_core.Input },],
-    'zIndex': [{ type: _angular_core.Input },],
-    'centerChange': [{ type: _angular_core.Output },],
-    'circleClick': [{ type: _angular_core.Output },],
-    'circleDblClick': [{ type: _angular_core.Output },],
-    'drag': [{ type: _angular_core.Output },],
-    'dragEnd': [{ type: _angular_core.Output },],
-    'dragStart': [{ type: _angular_core.Output },],
-    'mouseDown': [{ type: _angular_core.Output },],
-    'mouseMove': [{ type: _angular_core.Output },],
-    'mouseOut': [{ type: _angular_core.Output },],
-    'mouseOver': [{ type: _angular_core.Output },],
-    'mouseUp': [{ type: _angular_core.Output },],
-    'radiusChange': [{ type: _angular_core.Output },],
-    'rightClick': [{ type: _angular_core.Output },],
-};
-
-var infoWindowId = 0;
-/**
- * AgmInfoWindow renders a info window inside a {@link AgmMarker} or standalone.
- *
- * ### Example
- * ```typescript
- * import { Component } from '@angular/core';
- *
- * @Component({
- *  selector: 'my-map-cmp',
- *  styles: [`
- *    .agm-map-container {
- *      height: 300px;
- *    }
- * `],
- *  template: `
- *    <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom">
- *      <agm-marker [latitude]="lat" [longitude]="lng" [label]="'M'">
- *        <agm-info-window [disableAutoPan]="true">
- *          Hi, this is the content of the <strong>info window</strong>
- *        </agm-info-window>
- *      </agm-marker>
- *    </agm-map>
- *  `
- * })
- * ```
- */
-var AgmInfoWindow = (function () {
-    function AgmInfoWindow(_infoWindowManager, _el) {
-        this._infoWindowManager = _infoWindowManager;
-        this._el = _el;
-        /**
-         * Sets the open state for the InfoWindow. You can also call the open() and close() methods.
-         */
-        this.isOpen = false;
-        /**
-         * Emits an event when the info window is closed.
-         */
-        this.infoWindowClose = new _angular_core.EventEmitter();
-        this._infoWindowAddedToManager = false;
-        this._id = (infoWindowId++).toString();
-    }
-    AgmInfoWindow.prototype.ngOnInit = function () {
-        this.content = this._el.nativeElement.querySelector('.agm-info-window-content');
-        this._infoWindowManager.addInfoWindow(this);
-        this._infoWindowAddedToManager = true;
-        this._updateOpenState();
-        this._registerEventListeners();
-    };
-    /** @internal */
-    AgmInfoWindow.prototype.ngOnChanges = function (changes) {
-        if (!this._infoWindowAddedToManager) {
-            return;
-        }
-        if ((changes['latitude'] || changes['longitude']) && typeof this.latitude === 'number' &&
-            typeof this.longitude === 'number') {
-            this._infoWindowManager.setPosition(this);
-        }
-        if (changes['zIndex']) {
-            this._infoWindowManager.setZIndex(this);
-        }
-        if (changes['isOpen']) {
-            this._updateOpenState();
-        }
-        this._setInfoWindowOptions(changes);
-    };
-    AgmInfoWindow.prototype._registerEventListeners = function () {
-        var _this = this;
-        this._infoWindowManager.createEventObservable('closeclick', this).subscribe(function () {
-            _this.isOpen = false;
-            _this.infoWindowClose.emit();
-        });
-    };
-    AgmInfoWindow.prototype._updateOpenState = function () {
-        this.isOpen ? this.open() : this.close();
-    };
-    AgmInfoWindow.prototype._setInfoWindowOptions = function (changes) {
-        var options = {};
-        var optionKeys = Object.keys(changes).filter(function (k) { return AgmInfoWindow._infoWindowOptionsInputs.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
-        this._infoWindowManager.setOptions(this, options);
-    };
-    /**
-     * Opens the info window.
-     */
-    AgmInfoWindow.prototype.open = function () { return this._infoWindowManager.open(this); };
-    /**
-     * Closes the info window.
-     */
-    AgmInfoWindow.prototype.close = function () {
-        var _this = this;
-        return this._infoWindowManager.close(this).then(function () { _this.infoWindowClose.emit(); });
-    };
-    /** @internal */
-    AgmInfoWindow.prototype.id = function () { return this._id; };
-    /** @internal */
-    AgmInfoWindow.prototype.toString = function () { return 'AgmInfoWindow-' + this._id.toString(); };
-    /** @internal */
-    AgmInfoWindow.prototype.ngOnDestroy = function () { this._infoWindowManager.deleteInfoWindow(this); };
-    return AgmInfoWindow;
-}());
-AgmInfoWindow._infoWindowOptionsInputs = ['disableAutoPan', 'maxWidth'];
-AgmInfoWindow.decorators = [
-    { type: _angular_core.Component, args: [{
-                selector: 'agm-info-window',
-                template: "<div class='agm-info-window-content'>\n      <ng-content></ng-content>\n    </div>\n  "
-            },] },
-];
-/** @nocollapse */
-AgmInfoWindow.ctorParameters = function () { return [
-    { type: InfoWindowManager, },
-    { type: _angular_core.ElementRef, },
-]; };
-AgmInfoWindow.propDecorators = {
-    'latitude': [{ type: _angular_core.Input },],
-    'longitude': [{ type: _angular_core.Input },],
-    'disableAutoPan': [{ type: _angular_core.Input },],
-    'zIndex': [{ type: _angular_core.Input },],
-    'maxWidth': [{ type: _angular_core.Input },],
-    'isOpen': [{ type: _angular_core.Input },],
-    'infoWindowClose': [{ type: _angular_core.Output },],
-};
-
-var layerId = 0;
-var AgmKmlLayer = (function () {
-    function AgmKmlLayer(_manager) {
-        this._manager = _manager;
-        this._addedToManager = false;
-        this._id = (layerId++).toString();
-        this._subscriptions = [];
-        /**
-         * If true, the layer receives mouse events. Default value is true.
-         */
-        this.clickable = true;
-        /**
-         * By default, the input map is centered and zoomed to the bounding box of the contents of the
-         * layer.
-         * If this option is set to true, the viewport is left unchanged, unless the map's center and zoom
-         * were never set.
-         */
-        this.preserveViewport = false;
-        /**
-         * Whether to render the screen overlays. Default true.
-         */
-        this.screenOverlays = true;
-        /**
-         * Suppress the rendering of info windows when layer features are clicked.
-         */
-        this.suppressInfoWindows = false;
-        /**
-         * The URL of the KML document to display.
-         */
-        this.url = null;
-        /**
-         * The z-index of the layer.
-         */
-        this.zIndex = null;
-        /**
-         * This event is fired when a feature in the layer is clicked.
-         */
-        this.layerClick = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the KML layers default viewport has changed.
-         */
-        this.defaultViewportChange = new _angular_core.EventEmitter();
-        /**
-         * This event is fired when the KML layer has finished loading.
-         * At this point it is safe to read the status property to determine if the layer loaded
-         * successfully.
-         */
-        this.statusChange = new _angular_core.EventEmitter();
-    }
-    AgmKmlLayer.prototype.ngOnInit = function () {
-        if (this._addedToManager) {
-            return;
-        }
-        this._manager.addKmlLayer(this);
-        this._addedToManager = true;
-        this._addEventListeners();
-    };
-    AgmKmlLayer.prototype.ngOnChanges = function (changes) {
-        if (!this._addedToManager) {
-            return;
-        }
-        this._updatePolygonOptions(changes);
-    };
-    AgmKmlLayer.prototype._updatePolygonOptions = function (changes) {
-        var options = Object.keys(changes)
-            .filter(function (k) { return AgmKmlLayer._kmlLayerOptions.indexOf(k) !== -1; })
-            .reduce(function (obj, k) {
-            obj[k] = changes[k].currentValue;
-            return obj;
-        }, {});
-        if (Object.keys(options).length > 0) {
-            this._manager.setOptions(this, options);
-        }
-    };
-    AgmKmlLayer.prototype._addEventListeners = function () {
-        var _this = this;
-        var listeners = [
-            { name: 'click', handler: function (ev) { return _this.layerClick.emit(ev); } },
-            { name: 'defaultviewport_changed', handler: function () { return _this.defaultViewportChange.emit(); } },
-            { name: 'status_changed', handler: function () { return _this.statusChange.emit(); } },
-        ];
-        listeners.forEach(function (obj) {
-            var os = _this._manager.createEventObservable(obj.name, _this).subscribe(obj.handler);
-            _this._subscriptions.push(os);
-        });
-    };
-    /** @internal */
-    AgmKmlLayer.prototype.id = function () { return this._id; };
-    /** @internal */
-    AgmKmlLayer.prototype.toString = function () { return "AgmKmlLayer-" + this._id.toString(); };
-    /** @internal */
-    AgmKmlLayer.prototype.ngOnDestroy = function () {
-        this._manager.deleteKmlLayer(this);
-        // unsubscribe all registered observable subscriptions
-        this._subscriptions.forEach(function (s) { return s.unsubscribe(); });
-    };
-    return AgmKmlLayer;
-}());
-AgmKmlLayer._kmlLayerOptions = ['clickable', 'preserveViewport', 'screenOverlays', 'suppressInfoWindows', 'url', 'zIndex'];
-AgmKmlLayer.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-kml-layer'
-            },] },
-];
-/** @nocollapse */
-AgmKmlLayer.ctorParameters = function () { return [
-    { type: KmlLayerManager, },
-]; };
-AgmKmlLayer.propDecorators = {
-    'clickable': [{ type: _angular_core.Input },],
-    'preserveViewport': [{ type: _angular_core.Input },],
-    'screenOverlays': [{ type: _angular_core.Input },],
-    'suppressInfoWindows': [{ type: _angular_core.Input },],
-    'url': [{ type: _angular_core.Input },],
-    'zIndex': [{ type: _angular_core.Input },],
-    'layerClick': [{ type: _angular_core.Output },],
-    'defaultViewportChange': [{ type: _angular_core.Output },],
-    'statusChange': [{ type: _angular_core.Output },],
-};
-
-var layerId$1 = 0;
-/**
- * AgmDataLayer enables the user to add data layers to the map.
- *
- * ### Example
- * ```typescript
- * import { Component } from 'angular2/core';
- * import { AgmMap, AgmDataLayer } from
- * 'angular-google-maps/core';
- *
- * @Component({
- *  selector: 'my-map-cmp',
- *  directives: [AgmMap, AgmDataLayer],
- *  styles: [`
- *    .agm-container {
- *      height: 300px;
- *    }
- * `],
- *  template: `
- * <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom">
- * 	  <agm-data-layer [geoJson]="geoJsonObject" (layerClick)="clicked($event)" [style]="styleFunc">
- * 	  </agm-data-layer>
- * </agm-map>
- *  `
- * })
- * export class MyMapCmp {
- *   lat: number = -25.274449;
- *   lng: number = 133.775060;
- *   zoom: number = 5;
- *
- * clicked(clickEvent) {
- *    console.log(clickEvent);
- *  }
- *
- *  styleFunc(feature) {
- *    return ({
- *      clickable: false,
- *      fillColor: feature.getProperty('color'),
- *      strokeWeight: 1
- *    });
- *  }
- *
- *  geoJsonObject: Object = {
- *    "type": "FeatureCollection",
- *    "features": [
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "G",
- *          "color": "blue",
- *          "rank": "7",
- *          "ascii": "71"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [123.61, -22.14], [122.38, -21.73], [121.06, -21.69], [119.66, -22.22], [119.00, -23.40],
- *              [118.65, -24.76], [118.43, -26.07], [118.78, -27.56], [119.22, -28.57], [120.23, -29.49],
- *              [121.77, -29.87], [123.57, -29.64], [124.45, -29.03], [124.71, -27.95], [124.80, -26.70],
- *              [124.80, -25.60], [123.61, -25.64], [122.56, -25.64], [121.72, -25.72], [121.81, -26.62],
- *              [121.86, -26.98], [122.60, -26.90], [123.57, -27.05], [123.57, -27.68], [123.35, -28.18],
- *              [122.51, -28.38], [121.77, -28.26], [121.02, -27.91], [120.49, -27.21], [120.14, -26.50],
- *              [120.10, -25.64], [120.27, -24.52], [120.67, -23.68], [121.72, -23.32], [122.43, -23.48],
- *              [123.04, -24.04], [124.54, -24.28], [124.58, -23.20], [123.61, -22.14]
- *            ]
- *          ]
- *        }
- *      },
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "o",
- *          "color": "red",
- *          "rank": "15",
- *          "ascii": "111"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [128.84, -25.76], [128.18, -25.60], [127.96, -25.52], [127.88, -25.52], [127.70, -25.60],
- *              [127.26, -25.79], [126.60, -26.11], [126.16, -26.78], [126.12, -27.68], [126.21, -28.42],
- *              [126.69, -29.49], [127.74, -29.80], [128.80, -29.72], [129.41, -29.03], [129.72, -27.95],
- *              [129.68, -27.21], [129.33, -26.23], [128.84, -25.76]
- *            ],
- *            [
- *              [128.45, -27.44], [128.32, -26.94], [127.70, -26.82], [127.35, -27.05], [127.17, -27.80],
- *              [127.57, -28.22], [128.10, -28.42], [128.49, -27.80], [128.45, -27.44]
- *            ]
- *          ]
- *        }
- *      },
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "o",
- *          "color": "yellow",
- *          "rank": "15",
- *          "ascii": "111"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [131.87, -25.76], [131.35, -26.07], [130.95, -26.78], [130.82, -27.64], [130.86, -28.53],
- *              [131.26, -29.22], [131.92, -29.76], [132.45, -29.87], [133.06, -29.76], [133.72, -29.34],
- *              [134.07, -28.80], [134.20, -27.91], [134.07, -27.21], [133.81, -26.31], [133.37, -25.83],
- *              [132.71, -25.64], [131.87, -25.76]
- *            ],
- *            [
- *              [133.15, -27.17], [132.71, -26.86], [132.09, -26.90], [131.74, -27.56], [131.79, -28.26],
- *              [132.36, -28.45], [132.93, -28.34], [133.15, -27.76], [133.15, -27.17]
- *            ]
- *          ]
- *        }
- *      },
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "g",
- *          "color": "blue",
- *          "rank": "7",
- *          "ascii": "103"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [138.12, -25.04], [136.84, -25.16], [135.96, -25.36], [135.26, -25.99], [135, -26.90],
- *              [135.04, -27.91], [135.26, -28.88], [136.05, -29.45], [137.02, -29.49], [137.81, -29.49],
- *              [137.94, -29.99], [137.90, -31.20], [137.85, -32.24], [136.88, -32.69], [136.45, -32.36],
- *              [136.27, -31.80], [134.95, -31.84], [135.17, -32.99], [135.52, -33.43], [136.14, -33.76],
- *              [137.06, -33.83], [138.12, -33.65], [138.86, -33.21], [139.30, -32.28], [139.30, -31.24],
- *              [139.30, -30.14], [139.21, -28.96], [139.17, -28.22], [139.08, -27.41], [139.08, -26.47],
- *              [138.99, -25.40], [138.73, -25.00], [138.12, -25.04]
- *            ],
- *            [
- *              [137.50, -26.54], [136.97, -26.47], [136.49, -26.58], [136.31, -27.13], [136.31, -27.72],
- *              [136.58, -27.99], [137.50, -28.03], [137.68, -27.68], [137.59, -26.78], [137.50, -26.54]
- *            ]
- *          ]
- *        }
- *      },
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "l",
- *          "color": "green",
- *          "rank": "12",
- *          "ascii": "108"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [140.14, -21.04], [140.31, -29.42], [141.67, -29.49], [141.59, -20.92], [140.14, -21.04]
- *            ]
- *          ]
- *        }
- *      },
- *      {
- *        "type": "Feature",
- *        "properties": {
- *          "letter": "e",
- *          "color": "red",
- *          "rank": "5",
- *          "ascii": "101"
- *        },
- *        "geometry": {
- *          "type": "Polygon",
- *          "coordinates": [
- *            [
- *              [144.14, -27.41], [145.67, -27.52], [146.86, -27.09], [146.82, -25.64], [146.25, -25.04],
- *              [145.45, -24.68], [144.66, -24.60], [144.09, -24.76], [143.43, -25.08], [142.99, -25.40],
- *              [142.64, -26.03], [142.64, -27.05], [142.64, -28.26], [143.30, -29.11], [144.18, -29.57],
- *              [145.41, -29.64], [146.46, -29.19], [146.64, -28.72], [146.82, -28.14], [144.84, -28.42],
- *              [144.31, -28.26], [144.14, -27.41]
- *            ],
- *            [
- *              [144.18, -26.39], [144.53, -26.58], [145.19, -26.62], [145.72, -26.35], [145.81, -25.91],
- *              [145.41, -25.68], [144.97, -25.68], [144.49, -25.64], [144, -25.99], [144.18, -26.39]
- *            ]
- *          ]
- *        }
- *      }
- *    ]
- *  };
- * }
- * ```
- */
-var AgmDataLayer = (function () {
-    function AgmDataLayer(_manager) {
-        this._manager = _manager;
-        this._addedToManager = false;
-        this._id = (layerId$1++).toString();
-        this._subscriptions = [];
-        /**
-         * This event is fired when a feature in the layer is clicked.
-         */
-        this.layerClick = new _angular_core.EventEmitter();
-        /**
-         * The geoJson to be displayed
-         */
-        this.geoJson = null;
-    }
-    AgmDataLayer.prototype.ngOnInit = function () {
-        if (this._addedToManager) {
-            return;
-        }
-        this._manager.addDataLayer(this);
-        this._addedToManager = true;
-        this._addEventListeners();
-    };
-    AgmDataLayer.prototype._addEventListeners = function () {
-        var _this = this;
-        var listeners = [
-            { name: 'click', handler: function (ev) { return _this.layerClick.emit(ev); } },
-        ];
-        listeners.forEach(function (obj) {
-            var os = _this._manager.createEventObservable(obj.name, _this).subscribe(obj.handler);
-            _this._subscriptions.push(os);
-        });
-    };
-    /** @internal */
-    AgmDataLayer.prototype.id = function () { return this._id; };
-    /** @internal */
-    AgmDataLayer.prototype.toString = function () { return "AgmDataLayer-" + this._id.toString(); };
-    /** @internal */
-    AgmDataLayer.prototype.ngOnDestroy = function () {
-        this._manager.deleteDataLayer(this);
-        // unsubscribe all registered observable subscriptions
-        this._subscriptions.forEach(function (s) { return s.unsubscribe(); });
-    };
-    /** @internal */
-    AgmDataLayer.prototype.ngOnChanges = function (changes) {
-        var _this = this;
-        if (!this._addedToManager) {
-            return;
-        }
-        var geoJsonChange = changes['geoJson'];
-        if (geoJsonChange) {
-            this._manager.updateGeoJson(this, geoJsonChange.currentValue);
-        }
-        var dataOptions = {};
-        AgmDataLayer._dataOptionsAttributes.forEach(function (k) { return dataOptions[k] = changes.hasOwnProperty(k) ? changes[k].currentValue : _this[k]; });
-        this._manager.setDataOptions(this, dataOptions);
-    };
-    return AgmDataLayer;
-}());
-AgmDataLayer._dataOptionsAttributes = ['style'];
-AgmDataLayer.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-data-layer'
-            },] },
-];
-/** @nocollapse */
-AgmDataLayer.ctorParameters = function () { return [
-    { type: DataLayerManager, },
-]; };
-AgmDataLayer.propDecorators = {
-    'layerClick': [{ type: _angular_core.Output },],
-    'geoJson': [{ type: _angular_core.Input },],
-    'style': [{ type: _angular_core.Input },],
 };
 
 var markerId = 0;
@@ -2003,9 +2120,13 @@ var AgmMarker = (function () {
         this._observableSubscriptions.push(mout);
     };
     /** @internal */
-    AgmMarker.prototype.id = function () { return this._id; };
+    AgmMarker.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmMarker.prototype.toString = function () { return 'AgmMarker-' + this._id.toString(); };
+    AgmMarker.prototype.toString = function () {
+        return 'AgmMarker-' + this._id.toString();
+    };
     /** @internal */
     AgmMarker.prototype.ngOnDestroy = function () {
         this._markerManager.deleteMarker(this);
@@ -2015,9 +2136,7 @@ var AgmMarker = (function () {
     return AgmMarker;
 }());
 AgmMarker.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-marker'
-            },] },
+    { type: _angular_core.Directive, args: [{ selector: 'agm-marker' },] },
 ];
 /** @nocollapse */
 AgmMarker.ctorParameters = function () { return [
@@ -2223,7 +2342,9 @@ var AgmPolygon = (function () {
         }, {});
     };
     /** @internal */
-    AgmPolygon.prototype.id = function () { return this._id; };
+    AgmPolygon.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
     AgmPolygon.prototype.ngOnDestroy = function () {
         this._polygonManager.deletePolygon(this);
@@ -2238,9 +2359,7 @@ AgmPolygon._polygonOptionsAttributes = [
     'editable', 'visible'
 ];
 AgmPolygon.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-polygon'
-            },] },
+    { type: _angular_core.Directive, args: [{ selector: 'agm-polygon' },] },
 ];
 /** @nocollapse */
 AgmPolygon.ctorParameters = function () { return [
@@ -2415,7 +2534,9 @@ var AgmPolyline = (function () {
         var _this = this;
         if (this.points.length) {
             this.points.forEach(function (point) {
-                var s = point.positionChanged.subscribe(function () { _this._polylineManager.updatePolylinePoints(_this); });
+                var s = point.positionChanged.subscribe(function () {
+                    _this._polylineManager.updatePolylinePoints(_this);
+                });
                 _this._subscriptions.push(s);
             });
         }
@@ -2469,7 +2590,9 @@ var AgmPolyline = (function () {
         return [];
     };
     /** @internal */
-    AgmPolyline.prototype.id = function () { return this._id; };
+    AgmPolyline.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
     AgmPolyline.prototype.ngOnDestroy = function () {
         this._polylineManager.deletePolyline(this);
@@ -2483,9 +2606,7 @@ AgmPolyline._polylineOptionsAttributes = [
     'zIndex'
 ];
 AgmPolyline.decorators = [
-    { type: _angular_core.Directive, args: [{
-                selector: 'agm-polyline'
-            },] },
+    { type: _angular_core.Directive, args: [{ selector: 'agm-polyline' },] },
 ];
 /** @nocollapse */
 AgmPolyline.ctorParameters = function () { return [
@@ -2524,7 +2645,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         var _this = this;
         this._loader = _loader;
         this._zone = _zone;
-        this._view = new Promise(function (resolve) { _this._viewResolver = resolve; });
+        this._view = new Promise(function (resolve) {
+            _this._viewResolver = resolve;
+        });
     }
     GoogleStreetViewAPIWrapper.prototype.createView = function (el, viewOptions) {
         var _this = this;
@@ -2545,7 +2668,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         });
     };
     GoogleStreetViewAPIWrapper.prototype.createInfoWindow = function (options) {
-        return this._view.then(function () { return new google.maps.InfoWindow(options); });
+        return this._view.then(function () {
+            return new google.maps.InfoWindow(options);
+        });
     };
     /**
      * Creates a google.map.Circle for the current map.
@@ -2567,7 +2692,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         var _this = this;
         return rxjs_Observable.Observable.create(function (observer) {
             _this._view.then(function (m) {
-                m.addListener(eventName, function (arg) { _this._zone.run(function () { return observer.next(arg); }); });
+                m.addListener(eventName, function (arg) {
+                    _this._zone.run(function () { return observer.next(arg); });
+                });
             });
         });
     };
@@ -2619,7 +2746,9 @@ var GoogleStreetViewAPIWrapper = (function () {
     /**
      * Returns the native Google Maps Map instance. Be careful when using this instance directly.
      */
-    GoogleStreetViewAPIWrapper.prototype.getNativeMap = function () { return this._view; };
+    GoogleStreetViewAPIWrapper.prototype.getNativeMap = function () {
+        return this._view;
+    };
     /**
      * Triggers the given event name on the map instance.
      */
@@ -2636,152 +2765,6 @@ GoogleStreetViewAPIWrapper.ctorParameters = function () { return [
     { type: MapsAPILoader, },
     { type: _angular_core.NgZone, },
 ]; };
-
-var WindowRef = (function () {
-    function WindowRef() {
-    }
-    WindowRef.prototype.getNativeWindow = function () { return window; };
-    return WindowRef;
-}());
-var DocumentRef = (function () {
-    function DocumentRef() {
-    }
-    DocumentRef.prototype.getNativeDocument = function () { return document; };
-    return DocumentRef;
-}());
-var BROWSER_GLOBALS_PROVIDERS = [WindowRef, DocumentRef];
-
-var __extends = (window && window.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-(function (GoogleMapsScriptProtocol) {
-    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["HTTP"] = 1] = "HTTP";
-    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["HTTPS"] = 2] = "HTTPS";
-    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["AUTO"] = 3] = "AUTO";
-})(exports.GoogleMapsScriptProtocol || (exports.GoogleMapsScriptProtocol = {}));
-/**
- * Token for the config of the LazyMapsAPILoader. Please provide an object of type {@link
- * LazyMapsAPILoaderConfig}.
- */
-var LAZY_MAPS_API_CONFIG = new _angular_core.InjectionToken('angular-google-maps LAZY_MAPS_API_CONFIG');
-var LazyMapsAPILoader = (function (_super) {
-    __extends(LazyMapsAPILoader, _super);
-    function LazyMapsAPILoader(config, w, d) {
-        var _this = _super.call(this) || this;
-        _this._config = config || {};
-        _this._windowRef = w;
-        _this._documentRef = d;
-        return _this;
-    }
-    LazyMapsAPILoader.prototype.load = function () {
-        var _this = this;
-        var window = this._windowRef.getNativeWindow();
-        if (window.google && window.google.maps) {
-            // Google maps already loaded on the page.
-            return Promise.resolve();
-        }
-        if (this._scriptLoadingPromise) {
-            return this._scriptLoadingPromise;
-        }
-        var script = this._documentRef.getNativeDocument().createElement('script');
-        script.type = 'text/javascript';
-        script.async = true;
-        script.defer = true;
-        var callbackName = "angular2GoogleMapsLazyMapsAPILoader";
-        script.src = this._getScriptSrc(callbackName);
-        this._scriptLoadingPromise = new Promise(function (resolve, reject) {
-            _this._windowRef.getNativeWindow()[callbackName] = function () {
-                resolve();
-            };
-            script.onerror = function (error) {
-                reject(error);
-            };
-        });
-        this._documentRef.getNativeDocument().body.appendChild(script);
-        return this._scriptLoadingPromise;
-    };
-    LazyMapsAPILoader.prototype._getScriptSrc = function (callbackName) {
-        var protocolType = (this._config && this._config.protocol) || exports.GoogleMapsScriptProtocol.HTTPS;
-        var protocol;
-        switch (protocolType) {
-            case exports.GoogleMapsScriptProtocol.AUTO:
-                protocol = '';
-                break;
-            case exports.GoogleMapsScriptProtocol.HTTP:
-                protocol = 'http:';
-                break;
-            case exports.GoogleMapsScriptProtocol.HTTPS:
-                protocol = 'https:';
-                break;
-        }
-        var hostAndPath = this._config.hostAndPath || 'maps.googleapis.com/maps/api/js';
-        var queryParams = {
-            v: this._config.apiVersion || '3',
-            callback: callbackName,
-            key: this._config.apiKey,
-            client: this._config.clientId,
-            channel: this._config.channel,
-            libraries: this._config.libraries,
-            region: this._config.region,
-            language: this._config.language
-        };
-        var params = Object.keys(queryParams)
-            .filter(function (k) { return queryParams[k] != null; })
-            .filter(function (k) {
-            // remove empty arrays
-            return !Array.isArray(queryParams[k]) ||
-                (Array.isArray(queryParams[k]) && queryParams[k].length > 0);
-        })
-            .map(function (k) {
-            // join arrays as comma seperated strings
-            var i = queryParams[k];
-            if (Array.isArray(i)) {
-                return { key: k, value: i.join(',') };
-            }
-            return { key: k, value: queryParams[k] };
-        })
-            .map(function (entry) {
-            return entry.key + "=" + entry.value;
-        })
-            .join('&');
-        return protocol + "//" + hostAndPath + "?" + params;
-    };
-    return LazyMapsAPILoader;
-}(MapsAPILoader));
-LazyMapsAPILoader.decorators = [
-    { type: _angular_core.Injectable },
-];
-/** @nocollapse */
-LazyMapsAPILoader.ctorParameters = function () { return [
-    { type: undefined, decorators: [{ type: _angular_core.Inject, args: [LAZY_MAPS_API_CONFIG,] },] },
-    { type: WindowRef, },
-    { type: DocumentRef, },
-]; };
-
-/**
- * When using the NoOpMapsAPILoader, the Google Maps API must be added to the page via a `<script>`
- * Tag.
- * It's important that the Google Maps API script gets loaded first on the page.
- */
-var NoOpMapsAPILoader = (function () {
-    function NoOpMapsAPILoader() {
-    }
-    NoOpMapsAPILoader.prototype.load = function () {
-        if (!window.google || !window.google.maps) {
-            throw new Error('Google Maps API not loaded on page. Make sure window.google.maps is available!');
-        }
-        return Promise.resolve();
-    };
-    return NoOpMapsAPILoader;
-}());
 
 /**
  * SebMGoogleMap renders a Google Map.
@@ -2934,7 +2917,7 @@ var AgmStreetView = (function () {
     /** @internal */
     AgmStreetView.prototype.ngOnInit = function () {
         // todo: this should be solved with a new component and a viewChild decorator
-        var container = this._elem.nativeElement.querySelector('.sebm-google-street-view-container-inner');
+        var container = this._elem.nativeElement.querySelector('.agm-street-view-container-inner');
         this._initMapInstance(container);
     };
     AgmStreetView.prototype._initMapInstance = function (el) {
@@ -2971,7 +2954,8 @@ var AgmStreetView = (function () {
     // private _updateMapOptionsChanges(changes: {[propName: string]: SimpleChange}) {
     //   let options: {[propName: string]: any} = {};
     //   let optionKeys =
-    //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k) !== -1);
+    //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k)
+    //       !== -1);
     //   optionKeys.forEach((k) => { options[k] = changes[k].currentValue; });
     //   this._viewWrapper.setMapOptions(options);
     // }
@@ -2985,7 +2969,9 @@ var AgmStreetView = (function () {
         // common case for triggering a resize event), then the resize event would not
         // work (to show the map), so we trigger the event in a timeout.
         return new Promise(function (resolve) {
-            setTimeout(function () { return _this._viewsWrapper.triggerMapEvent('resize').then(function () { return resolve(); }); });
+            setTimeout(function () {
+                return _this._viewsWrapper.triggerMapEvent('resize').then(function () { return resolve(); });
+            });
         });
     };
     AgmStreetView.prototype._updatePosition = function (changes) {
@@ -3015,11 +3001,7 @@ var AgmStreetView = (function () {
         if (typeof this.pitch !== 'number' || typeof this.heading !== 'number') {
             return;
         }
-        var newPov = {
-            heading: this.heading,
-            pitch: this.pitch,
-            zoom: this.zoom
-        };
+        var newPov = { heading: this.heading, pitch: this.pitch, zoom: this.zoom };
         this._viewsWrapper.setPov(newPov);
     };
     // private _fitBounds() {
@@ -3084,7 +3066,9 @@ var AgmStreetView = (function () {
         ];
         events.forEach(function (e) {
             var s = _this._viewsWrapper.subscribeToViewEvent(e.name).subscribe(function (event) {
-                var value = { coords: { heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom } };
+                var value = {
+                    coords: { heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom }
+                };
                 e.emitter.emit(value);
             });
             _this._observableSubscriptions.push(s);
@@ -3095,17 +3079,24 @@ var AgmStreetView = (function () {
 AgmStreetView.decorators = [
     { type: _angular_core.Component, args: [{
                 selector: 'agm-google-street-view',
-                providers: [GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager],
+                providers: [
+                    GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager
+                ],
                 inputs: [
-                    'longitude', 'latitude', 'heading', 'pitch', 'zoom', 'draggable: mapDraggable',
-                    'disableDoubleClickZoom', 'backgroundColor', 'zoomControl',
+                    'longitude',
+                    'latitude',
+                    'heading',
+                    'pitch',
+                    'zoom',
+                    'draggable: mapDraggable',
+                    'disableDoubleClickZoom',
+                    'backgroundColor',
+                    'zoomControl',
                 ],
-                outputs: [
-                    'mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'
-                ],
-                host: { '[class.sebm-google-street-view]': 'true' },
-                styles: ["\n    .sebm-google-street-view-container-inner {\n      width: inherit;\n      height: inherit;\n    }\n    .sebm-google-street-view-content {\n      display:none;\n    }\n  "],
-                template: "\n    <div class='sebm-google-street-view-container-inner'></div>\n    <div class='sebm-google-street-view-content'>\n      <ng-content></ng-content>\n    </div>\n  "
+                outputs: ['mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'],
+                host: { '[class.agm-street-view]': 'true' },
+                styles: ["\n    .agm-street-view-container-inner {\n      width: inherit;\n      height: inherit;\n    }\n    .agm-street-view-content {\n      display:none;\n    }\n  "],
+                template: "\n    <div class='agm-street-view-container-inner sebm-google-street-view-container-inner'></div>\n    <div class='agm-street-view-content'>\n      <ng-content></ng-content>\n    </div>\n  "
             },] },
 ];
 /** @nocollapse */
@@ -3114,14 +3105,163 @@ AgmStreetView.ctorParameters = function () { return [
     { type: GoogleStreetViewAPIWrapper, },
 ]; };
 
+var WindowRef = (function () {
+    function WindowRef() {
+    }
+    WindowRef.prototype.getNativeWindow = function () {
+        return window;
+    };
+    return WindowRef;
+}());
+var DocumentRef = (function () {
+    function DocumentRef() {
+    }
+    DocumentRef.prototype.getNativeDocument = function () {
+        return document;
+    };
+    return DocumentRef;
+}());
+var BROWSER_GLOBALS_PROVIDERS = [WindowRef, DocumentRef];
+
+var __extends = (window && window.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+(function (GoogleMapsScriptProtocol) {
+    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["HTTP"] = 1] = "HTTP";
+    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["HTTPS"] = 2] = "HTTPS";
+    GoogleMapsScriptProtocol[GoogleMapsScriptProtocol["AUTO"] = 3] = "AUTO";
+})(exports.GoogleMapsScriptProtocol || (exports.GoogleMapsScriptProtocol = {}));
+/**
+ * Token for the config of the LazyMapsAPILoader. Please provide an object of type {@link
+ * LazyMapsAPILoaderConfig}.
+ */
+var LAZY_MAPS_API_CONFIG = new _angular_core.InjectionToken('angular-google-maps LAZY_MAPS_API_CONFIG');
+var LazyMapsAPILoader = (function (_super) {
+    __extends(LazyMapsAPILoader, _super);
+    function LazyMapsAPILoader(config, w, d) {
+        var _this = _super.call(this) || this;
+        _this._config = config || {};
+        _this._windowRef = w;
+        _this._documentRef = d;
+        return _this;
+    }
+    LazyMapsAPILoader.prototype.load = function () {
+        var _this = this;
+        var window = this._windowRef.getNativeWindow();
+        if (window.google && window.google.maps) {
+            // Google maps already loaded on the page.
+            return Promise.resolve();
+        }
+        if (this._scriptLoadingPromise) {
+            return this._scriptLoadingPromise;
+        }
+        var script = this._documentRef.getNativeDocument().createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.defer = true;
+        var callbackName = "angular2GoogleMapsLazyMapsAPILoader";
+        script.src = this._getScriptSrc(callbackName);
+        this._scriptLoadingPromise = new Promise(function (resolve, reject) {
+            _this._windowRef.getNativeWindow()[callbackName] = function () {
+                resolve();
+            };
+            script.onerror = function (error) {
+                reject(error);
+            };
+        });
+        this._documentRef.getNativeDocument().body.appendChild(script);
+        return this._scriptLoadingPromise;
+    };
+    LazyMapsAPILoader.prototype._getScriptSrc = function (callbackName) {
+        var protocolType = (this._config && this._config.protocol) || exports.GoogleMapsScriptProtocol.HTTPS;
+        var protocol;
+        switch (protocolType) {
+            case exports.GoogleMapsScriptProtocol.AUTO:
+                protocol = '';
+                break;
+            case exports.GoogleMapsScriptProtocol.HTTP:
+                protocol = 'http:';
+                break;
+            case exports.GoogleMapsScriptProtocol.HTTPS:
+                protocol = 'https:';
+                break;
+        }
+        var hostAndPath = this._config.hostAndPath || 'maps.googleapis.com/maps/api/js';
+        var queryParams = {
+            v: this._config.apiVersion || '3',
+            callback: callbackName,
+            key: this._config.apiKey,
+            client: this._config.clientId,
+            channel: this._config.channel,
+            libraries: this._config.libraries,
+            region: this._config.region,
+            language: this._config.language
+        };
+        var params = Object.keys(queryParams)
+            .filter(function (k) { return queryParams[k] != null; })
+            .filter(function (k) {
+            // remove empty arrays
+            return !Array.isArray(queryParams[k]) ||
+                (Array.isArray(queryParams[k]) && queryParams[k].length > 0);
+        })
+            .map(function (k) {
+            // join arrays as comma seperated strings
+            var i = queryParams[k];
+            if (Array.isArray(i)) {
+                return { key: k, value: i.join(',') };
+            }
+            return { key: k, value: queryParams[k] };
+        })
+            .map(function (entry) {
+            return entry.key + "=" + entry.value;
+        })
+            .join('&');
+        return protocol + "//" + hostAndPath + "?" + params;
+    };
+    return LazyMapsAPILoader;
+}(MapsAPILoader));
+LazyMapsAPILoader.decorators = [
+    { type: _angular_core.Injectable },
+];
+/** @nocollapse */
+LazyMapsAPILoader.ctorParameters = function () { return [
+    { type: undefined, decorators: [{ type: _angular_core.Inject, args: [LAZY_MAPS_API_CONFIG,] },] },
+    { type: WindowRef, },
+    { type: DocumentRef, },
+]; };
+
+/**
+ * When using the NoOpMapsAPILoader, the Google Maps API must be added to the page via a `<script>`
+ * Tag.
+ * It's important that the Google Maps API script gets loaded first on the page.
+ */
+var NoOpMapsAPILoader = (function () {
+    function NoOpMapsAPILoader() {
+    }
+    NoOpMapsAPILoader.prototype.load = function () {
+        if (!window.google || !window.google.maps) {
+            throw new Error('Google Maps API not loaded on page. Make sure window.google.maps is available!');
+        }
+        return Promise.resolve();
+    };
+    return NoOpMapsAPILoader;
+}());
+
 /**
  * @internal
  */
 function coreDirectives() {
     return [
-        AgmMap, AgmStreetView, AgmMarker, AgmInfoWindow, AgmCircle,
-        AgmPolygon, AgmPolyline, AgmPolylinePoint, AgmKmlLayer,
-        AgmDataLayer
+        AgmMap, AgmStreetView, AgmMarker, AgmInfoWindow, AgmCircle, AgmPolygon, AgmPolyline,
+        AgmPolylinePoint, AgmKmlLayer, AgmDataLayer
     ];
 }
 /**
@@ -3154,24 +3294,25 @@ AgmCoreModule.ctorParameters = function () { return []; };
 // main modules
 
 exports.AgmCoreModule = AgmCoreModule;
-exports.AgmMap = AgmMap;
 exports.AgmCircle = AgmCircle;
+exports.AgmDataLayer = AgmDataLayer;
 exports.AgmInfoWindow = AgmInfoWindow;
 exports.AgmKmlLayer = AgmKmlLayer;
-exports.AgmDataLayer = AgmDataLayer;
+exports.AgmMap = AgmMap;
 exports.AgmMarker = AgmMarker;
 exports.AgmPolygon = AgmPolygon;
 exports.AgmPolyline = AgmPolyline;
 exports.AgmPolylinePoint = AgmPolylinePoint;
+exports.AgmStreetView = AgmStreetView;
 exports.GoogleMapsAPIWrapper = GoogleMapsAPIWrapper;
 exports.GoogleStreetViewAPIWrapper = GoogleStreetViewAPIWrapper;
 exports.CircleManager = CircleManager;
+exports.DataLayerManager = DataLayerManager;
 exports.InfoWindowManager = InfoWindowManager;
+exports.KmlLayerManager = KmlLayerManager;
 exports.MarkerManager = MarkerManager;
 exports.PolygonManager = PolygonManager;
 exports.PolylineManager = PolylineManager;
-exports.KmlLayerManager = KmlLayerManager;
-exports.DataLayerManager = DataLayerManager;
 exports.LAZY_MAPS_API_CONFIG = LAZY_MAPS_API_CONFIG;
 exports.LazyMapsAPILoader = LazyMapsAPILoader;
 exports.MapsAPILoader = MapsAPILoader;

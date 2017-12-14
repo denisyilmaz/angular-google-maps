@@ -30,10 +30,14 @@ var PolygonManager = (function () {
         if (m == null) {
             return Promise.resolve();
         }
-        return m.then(function (l) { return _this._zone.run(function () { l.setPaths(polygon.paths); }); });
+        return m.then(function (l) { return _this._zone.run(function () {
+            l.setPaths(polygon.paths);
+        }); });
     };
     PolygonManager.prototype.setPolygonOptions = function (path, options) {
-        return this._polygons.get(path).then(function (l) { l.setOptions(options); });
+        return this._polygons.get(path).then(function (l) {
+            l.setOptions(options);
+        });
     };
     PolygonManager.prototype.deletePolygon = function (paths) {
         var _this = this;

@@ -120,7 +120,9 @@ var AgmCircle = (function () {
     AgmCircle.prototype._updateCircleOptionsChanges = function (changes) {
         var options = {};
         var optionKeys = Object.keys(changes).filter(function (k) { return AgmCircle._mapOptions.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
         if (optionKeys.length > 0) {
             this._manager.setOptions(this, options);
         }
@@ -160,15 +162,21 @@ var AgmCircle = (function () {
     };
     /** @internal */
     AgmCircle.prototype.ngOnDestroy = function () {
-        this._eventSubscriptions.forEach(function (s) { s.unsubscribe(); });
+        this._eventSubscriptions.forEach(function (s) {
+            s.unsubscribe();
+        });
         this._eventSubscriptions = null;
         this._manager.removeCircle(this);
     };
     /**
      * Gets the LatLngBounds of this Circle.
      */
-    AgmCircle.prototype.getBounds = function () { return this._manager.getBounds(this); };
-    AgmCircle.prototype.getCenter = function () { return this._manager.getCenter(this); };
+    AgmCircle.prototype.getBounds = function () {
+        return this._manager.getBounds(this);
+    };
+    AgmCircle.prototype.getCenter = function () {
+        return this._manager.getCenter(this);
+    };
     return AgmCircle;
 }());
 export { AgmCircle };
@@ -177,9 +185,7 @@ AgmCircle._mapOptions = [
     'visible', 'zIndex', 'clickable'
 ];
 AgmCircle.decorators = [
-    { type: Directive, args: [{
-                selector: 'agm-circle'
-            },] },
+    { type: Directive, args: [{ selector: 'agm-circle' },] },
 ];
 /** @nocollapse */
 AgmCircle.ctorParameters = function () { return [

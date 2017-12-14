@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@agm/core')) :
-	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@agm/core'], factory) :
-	(factory((global.ngmaps = global.ngmaps || {}, global.ngmaps.snazzyInfoWindow = global.ngmaps.snazzyInfoWindow || {}),global.ng.core,global.ngmaps.core));
-}(this, (function (exports,_angular_core,_agm_core) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@agm/core'), require('@angular/core')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@agm/core', '@angular/core'], factory) :
+	(factory((global.ngmaps = global.ngmaps || {}, global.ngmaps.snazzyInfoWindow = global.ngmaps.snazzyInfoWindow || {}),global.ngmaps.core,global.ng.core));
+}(this, (function (exports,_agm_core,_angular_core) { 'use strict';
 
 var AgmSnazzyInfoWindow = (function () {
     function AgmSnazzyInfoWindow(_marker, _wrapper, _manager, _loader) {
@@ -36,7 +36,8 @@ var AgmSnazzyInfoWindow = (function () {
          */
         this.openOnMarkerClick = true;
         /**
-         * Determines if the info window will close when the map is clicked. An internal listener is added to the Google Maps click event which calls the close() method.
+         * Determines if the info window will close when the map is clicked. An internal listener is added
+         * to the Google Maps click event which calls the close() method.
          * This will not activate on the Google Maps drag event when the user is panning the map.
          */
         this.closeOnMapClick = true;
@@ -85,54 +86,52 @@ var AgmSnazzyInfoWindow = (function () {
     AgmSnazzyInfoWindow.prototype.ngAfterViewInit = function () {
         var _this = this;
         var m = this._manager != null ? this._manager.getNativeMarker(this._marker) : null;
-        this._snazzyInfoWindowInitialized = this._loader.load()
-            .then(function () { return System.import('snazzy-info-window'); })
-            .then(function (module) { return Promise.all([module, m, _this._wrapper.getNativeMap()]); })
-            .then(function (elems) {
-            var options = {
-                map: elems[2],
-                content: '',
-                placement: _this.placement,
-                maxWidth: _this.maxWidth,
-                maxHeight: _this.maxHeight,
-                backgroundColor: _this.backgroundColor,
-                padding: _this.padding,
-                border: _this.border,
-                borderRadius: _this.borderRadius,
-                fontColor: _this.fontColor,
-                pointer: _this.pointer,
-                shadow: _this.shadow,
-                closeOnMapClick: _this.closeOnMapClick,
-                openOnMarkerClick: _this.openOnMarkerClick,
-                closeWhenOthersOpen: _this.closeWhenOthersOpen,
-                showCloseButton: _this.showCloseButton,
-                panOnOpen: _this.panOnOpen,
-                wrapperClass: _this.wrapperClass,
-                callbacks: {
-                    beforeOpen: function () {
-                        _this._createViewContent();
-                        _this.beforeOpen.emit();
-                    },
-                    afterOpen: function () {
-                        _this.isOpenChange.emit(_this.openStatus());
-                    },
-                    afterClose: function () {
-                        _this.afterClose.emit();
-                        _this.isOpenChange.emit(_this.openStatus());
+        this._snazzyInfoWindowInitialized =
+            this._loader.load()
+                .then(function () { return System.import('snazzy-info-window'); })
+                .then(function (module) { return Promise.all([module, m, _this._wrapper.getNativeMap()]); })
+                .then(function (elems) {
+                var options = {
+                    map: elems[2],
+                    content: '',
+                    placement: _this.placement,
+                    maxWidth: _this.maxWidth,
+                    maxHeight: _this.maxHeight,
+                    backgroundColor: _this.backgroundColor,
+                    padding: _this.padding,
+                    border: _this.border,
+                    borderRadius: _this.borderRadius,
+                    fontColor: _this.fontColor,
+                    pointer: _this.pointer,
+                    shadow: _this.shadow,
+                    closeOnMapClick: _this.closeOnMapClick,
+                    openOnMarkerClick: _this.openOnMarkerClick,
+                    closeWhenOthersOpen: _this.closeWhenOthersOpen,
+                    showCloseButton: _this.showCloseButton,
+                    panOnOpen: _this.panOnOpen,
+                    wrapperClass: _this.wrapperClass,
+                    callbacks: {
+                        beforeOpen: function () {
+                            _this._createViewContent();
+                            _this.beforeOpen.emit();
+                        },
+                        afterOpen: function () {
+                            _this.isOpenChange.emit(_this.openStatus());
+                        },
+                        afterClose: function () {
+                            _this.afterClose.emit();
+                            _this.isOpenChange.emit(_this.openStatus());
+                        }
                     }
-                }
-            };
-            if (elems[1] != null) {
-                options.marker = elems[1];
-            }
-            else {
-                options.position = {
-                    lat: _this.latitude,
-                    lng: _this.longitude
                 };
-            }
-            _this._nativeSnazzyInfoWindow = new elems[0](options);
-        });
+                if (elems[1] != null) {
+                    options.marker = elems[1];
+                }
+                else {
+                    options.position = { lat: _this.latitude, lng: _this.longitude };
+                }
+                _this._nativeSnazzyInfoWindow = new elems[0](options);
+            });
         this._snazzyInfoWindowInitialized.then(function () {
             if (_this.isOpen) {
                 _this._openInfoWindow();
@@ -164,10 +163,7 @@ var AgmSnazzyInfoWindow = (function () {
         });
     };
     AgmSnazzyInfoWindow.prototype._updatePosition = function () {
-        this._nativeSnazzyInfoWindow.setPosition({
-            lat: this.latitude,
-            lng: this.longitude
-        });
+        this._nativeSnazzyInfoWindow.setPosition({ lat: this.latitude, lng: this.longitude });
     };
     /**
      * Returns true when the Snazzy Info Window is initialized and open.
@@ -234,18 +230,15 @@ var AgmSnazzyInfoWindowModule = (function () {
     return AgmSnazzyInfoWindowModule;
 }());
 AgmSnazzyInfoWindowModule.decorators = [
-    { type: _angular_core.NgModule, args: [{
-                declarations: [AgmSnazzyInfoWindow],
-                exports: [AgmSnazzyInfoWindow]
-            },] },
+    { type: _angular_core.NgModule, args: [{ declarations: [AgmSnazzyInfoWindow], exports: [AgmSnazzyInfoWindow] },] },
 ];
 /** @nocollapse */
 AgmSnazzyInfoWindowModule.ctorParameters = function () { return []; };
 
 // public API
 
-exports.AgmSnazzyInfoWindowModule = AgmSnazzyInfoWindowModule;
 exports.AgmSnazzyInfoWindow = AgmSnazzyInfoWindow;
+exports.AgmSnazzyInfoWindowModule = AgmSnazzyInfoWindowModule;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -181,7 +181,9 @@ var AgmPolygon = (function () {
         }, {});
     };
     /** @internal */
-    AgmPolygon.prototype.id = function () { return this._id; };
+    AgmPolygon.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
     AgmPolygon.prototype.ngOnDestroy = function () {
         this._polygonManager.deletePolygon(this);
@@ -197,9 +199,7 @@ AgmPolygon._polygonOptionsAttributes = [
     'editable', 'visible'
 ];
 AgmPolygon.decorators = [
-    { type: Directive, args: [{
-                selector: 'agm-polygon'
-            },] },
+    { type: Directive, args: [{ selector: 'agm-polygon' },] },
 ];
 /** @nocollapse */
 AgmPolygon.ctorParameters = function () { return [

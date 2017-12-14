@@ -10,7 +10,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         var _this = this;
         this._loader = _loader;
         this._zone = _zone;
-        this._view = new Promise(function (resolve) { _this._viewResolver = resolve; });
+        this._view = new Promise(function (resolve) {
+            _this._viewResolver = resolve;
+        });
     }
     GoogleStreetViewAPIWrapper.prototype.createView = function (el, viewOptions) {
         var _this = this;
@@ -31,7 +33,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         });
     };
     GoogleStreetViewAPIWrapper.prototype.createInfoWindow = function (options) {
-        return this._view.then(function () { return new google.maps.InfoWindow(options); });
+        return this._view.then(function () {
+            return new google.maps.InfoWindow(options);
+        });
     };
     /**
      * Creates a google.map.Circle for the current map.
@@ -53,7 +57,9 @@ var GoogleStreetViewAPIWrapper = (function () {
         var _this = this;
         return Observable.create(function (observer) {
             _this._view.then(function (m) {
-                m.addListener(eventName, function (arg) { _this._zone.run(function () { return observer.next(arg); }); });
+                m.addListener(eventName, function (arg) {
+                    _this._zone.run(function () { return observer.next(arg); });
+                });
             });
         });
     };
@@ -105,7 +111,9 @@ var GoogleStreetViewAPIWrapper = (function () {
     /**
      * Returns the native Google Maps Map instance. Be careful when using this instance directly.
      */
-    GoogleStreetViewAPIWrapper.prototype.getNativeMap = function () { return this._view; };
+    GoogleStreetViewAPIWrapper.prototype.getNativeMap = function () {
+        return this._view;
+    };
     /**
      * Triggers the given event name on the map instance.
      */

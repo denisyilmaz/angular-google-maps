@@ -10,8 +10,9 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         this._loader = _loader;
         this._zone = _zone;
-        this._map =
-            new Promise(function (resolve) { _this._mapResolver = resolve; });
+        this._map = new Promise(function (resolve) {
+            _this._mapResolver = resolve;
+        });
     }
     GoogleMapsAPIWrapper.prototype.createMap = function (el, mapOptions) {
         var _this = this;
@@ -22,7 +23,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.setMapOptions = function (options) {
-        this._map.then(function (m) { m.setOptions(options); });
+        this._map.then(function (m) {
+            m.setOptions(options);
+        });
     };
     /**
      * Creates a google map marker with the map context
@@ -38,7 +41,9 @@ var GoogleMapsAPIWrapper = (function () {
         });
     };
     GoogleMapsAPIWrapper.prototype.createInfoWindow = function (options) {
-        return this._map.then(function () { return new google.maps.InfoWindow(options); });
+        return this._map.then(function () {
+            return new google.maps.InfoWindow(options);
+        });
     };
     /**
      * Creates a google.map.Circle for the current map.
@@ -83,14 +88,18 @@ var GoogleMapsAPIWrapper = (function () {
         var _this = this;
         return Observable.create(function (observer) {
             _this._map.then(function (m) {
-                m.addListener(eventName, function (arg) { _this._zone.run(function () { return observer.next(arg); }); });
+                m.addListener(eventName, function (arg) {
+                    _this._zone.run(function () { return observer.next(arg); });
+                });
             });
         });
     };
     GoogleMapsAPIWrapper.prototype.setCenter = function (latLng) {
         return this._map.then(function (map) { return map.setCenter(latLng); });
     };
-    GoogleMapsAPIWrapper.prototype.getZoom = function () { return this._map.then(function (map) { return map.getZoom(); }); };
+    GoogleMapsAPIWrapper.prototype.getZoom = function () {
+        return this._map.then(function (map) { return map.getZoom(); });
+    };
     GoogleMapsAPIWrapper.prototype.getBounds = function () {
         return this._map.then(function (map) { return map.getBounds(); });
     };
@@ -118,7 +127,9 @@ var GoogleMapsAPIWrapper = (function () {
     /**
      * Returns the native Google Maps Map instance. Be careful when using this instance directly.
      */
-    GoogleMapsAPIWrapper.prototype.getNativeMap = function () { return this._map; };
+    GoogleMapsAPIWrapper.prototype.getNativeMap = function () {
+        return this._map;
+    };
     /**
      * Triggers the given event name on the map instance.
      */

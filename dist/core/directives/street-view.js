@@ -155,7 +155,7 @@ var AgmStreetView = (function () {
     /** @internal */
     AgmStreetView.prototype.ngOnInit = function () {
         // todo: this should be solved with a new component and a viewChild decorator
-        var container = this._elem.nativeElement.querySelector('.sebm-google-street-view-container-inner');
+        var container = this._elem.nativeElement.querySelector('.agm-street-view-container-inner');
         this._initMapInstance(container);
     };
     AgmStreetView.prototype._initMapInstance = function (el) {
@@ -192,7 +192,8 @@ var AgmStreetView = (function () {
     // private _updateMapOptionsChanges(changes: {[propName: string]: SimpleChange}) {
     //   let options: {[propName: string]: any} = {};
     //   let optionKeys =
-    //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k) !== -1);
+    //       Object.keys(changes).filter(k => SebmGoogleStreetView._mapOptionsAttributes.indexOf(k)
+    //       !== -1);
     //   optionKeys.forEach((k) => { options[k] = changes[k].currentValue; });
     //   this._viewWrapper.setMapOptions(options);
     // }
@@ -206,7 +207,9 @@ var AgmStreetView = (function () {
         // common case for triggering a resize event), then the resize event would not
         // work (to show the map), so we trigger the event in a timeout.
         return new Promise(function (resolve) {
-            setTimeout(function () { return _this._viewsWrapper.triggerMapEvent('resize').then(function () { return resolve(); }); });
+            setTimeout(function () {
+                return _this._viewsWrapper.triggerMapEvent('resize').then(function () { return resolve(); });
+            });
         });
     };
     AgmStreetView.prototype._updatePosition = function (changes) {
@@ -236,11 +239,7 @@ var AgmStreetView = (function () {
         if (typeof this.pitch !== 'number' || typeof this.heading !== 'number') {
             return;
         }
-        var newPov = {
-            heading: this.heading,
-            pitch: this.pitch,
-            zoom: this.zoom
-        };
+        var newPov = { heading: this.heading, pitch: this.pitch, zoom: this.zoom };
         this._viewsWrapper.setPov(newPov);
     };
     // private _fitBounds() {
@@ -305,7 +304,9 @@ var AgmStreetView = (function () {
         ];
         events.forEach(function (e) {
             var s = _this._viewsWrapper.subscribeToViewEvent(e.name).subscribe(function (event) {
-                var value = { coords: { heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom } };
+                var value = {
+                    coords: { heading: event.pov.heading, pitch: event.pov.pitch, zoom: event.pov.zoom }
+                };
                 e.emitter.emit(value);
             });
             _this._observableSubscriptions.push(s);
@@ -317,17 +318,24 @@ export { AgmStreetView };
 AgmStreetView.decorators = [
     { type: Component, args: [{
                 selector: 'agm-google-street-view',
-                providers: [GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager],
+                providers: [
+                    GoogleStreetViewAPIWrapper, MarkerManager, InfoWindowManager, CircleManager, PolylineManager
+                ],
                 inputs: [
-                    'longitude', 'latitude', 'heading', 'pitch', 'zoom', 'draggable: mapDraggable',
-                    'disableDoubleClickZoom', 'backgroundColor', 'zoomControl',
+                    'longitude',
+                    'latitude',
+                    'heading',
+                    'pitch',
+                    'zoom',
+                    'draggable: mapDraggable',
+                    'disableDoubleClickZoom',
+                    'backgroundColor',
+                    'zoomControl',
                 ],
-                outputs: [
-                    'mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'
-                ],
-                host: { '[class.sebm-google-street-view]': 'true' },
-                styles: ["\n    .sebm-google-street-view-container-inner {\n      width: inherit;\n      height: inherit;\n    }\n    .sebm-google-street-view-content {\n      display:none;\n    }\n  "],
-                template: "\n    <div class='sebm-google-street-view-container-inner'></div>\n    <div class='sebm-google-street-view-content'>\n      <ng-content></ng-content>\n    </div>\n  "
+                outputs: ['mapClick', 'mapRightClick', 'mapDblClick', 'positionChange', 'povChange', 'idle'],
+                host: { '[class.agm-street-view]': 'true' },
+                styles: ["\n    .agm-street-view-container-inner {\n      width: inherit;\n      height: inherit;\n    }\n    .agm-street-view-content {\n      display:none;\n    }\n  "],
+                template: "\n    <div class='agm-street-view-container-inner sebm-google-street-view-container-inner'></div>\n    <div class='agm-street-view-content'>\n      <ng-content></ng-content>\n    </div>\n  "
             },] },
 ];
 /** @nocollapse */

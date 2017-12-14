@@ -1,19 +1,18 @@
-import { Component, ElementRef, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChanges, Input, Output } from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 
 import {MouseEvent} from '../map-types';
 import {GoogleMapsAPIWrapper} from '../services/google-maps-api-wrapper';
-import {
-  FullscreenControlOptions, LatLng, LatLngLiteral, MapTypeControlOptions, MapTypeId, PanControlOptions,
-  RotateControlOptions, ScaleControlOptions, StreetViewControlOptions, ZoomControlOptions} from '../services/google-maps-types';
+import {FullscreenControlOptions, LatLng, LatLngLiteral, MapTypeControlOptions, MapTypeId, PanControlOptions, RotateControlOptions, ScaleControlOptions, StreetViewControlOptions, ZoomControlOptions} from '../services/google-maps-types';
 import {LatLngBounds, LatLngBoundsLiteral, MapTypeStyle} from '../services/google-maps-types';
 import {CircleManager} from '../services/managers/circle-manager';
 import {InfoWindowManager} from '../services/managers/info-window-manager';
 import {MarkerManager} from '../services/managers/marker-manager';
 import {PolygonManager} from '../services/managers/polygon-manager';
 import {PolylineManager} from '../services/managers/polyline-manager';
-import {KmlLayerManager} from './../services/managers/kml-layer-manager';
+
 import {DataLayerManager} from './../services/managers/data-layer-manager';
+import {KmlLayerManager} from './../services/managers/kml-layer-manager';
 
 /**
  * AgmMap renders a Google Map.
@@ -205,7 +204,7 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   /**
    * The initial enabled/disabled state of the Pan control.
    */
-  @Input() panControl: boolean  = false;
+  @Input() panControl: boolean = false;
 
   /**
    * Options for the Pan control.
@@ -225,7 +224,7 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   /**
    * The initial enabled/disabled state of the Fullscreen control.
    */
-  @Input() fullscreenControl: boolean  = false;
+  @Input() fullscreenControl: boolean = false;
 
   /**
    * Options for the Fullscreen control.
@@ -246,10 +245,12 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   /**
    * This setting controls how gestures on the map are handled.
    * Allowed values:
-   * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are not handled by the map.)
+   * - 'cooperative' (Two-finger touch gestures pan and zoom the map. One-finger touch gestures are
+   * not handled by the map.)
    * - 'greedy'      (All touch gestures pan or zoom the map.)
    * - 'none'        (The map cannot be panned or zoomed by user gestures.)
-   * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on whether the page is scrollable or not.
+   * - 'auto'        [default] (Gesture handling is either cooperative or greedy, depending on
+   * whether the page is scrollable or not.
    */
   @Input() gestureHandling: 'cooperative'|'greedy'|'none'|'auto' = 'auto';
 
@@ -257,12 +258,33 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
    * Map option attributes that can change over time
    */
   private static _mapOptionsAttributes: string[] = [
-    'disableDoubleClickZoom', 'scrollwheel', 'draggable', 'draggableCursor', 'draggingCursor',
-    'keyboardShortcuts', 'zoomControl', 'zoomControlOptions', 'styles', 'streetViewControl',
-    'streetViewControlOptions', 'zoom', 'mapTypeControl', 'mapTypeControlOptions', 'minZoom',
-    'maxZoom', 'panControl', 'panControlOptions', 'rotateControl', 'rotateControlOptions',
-    'fullscreenControl', 'fullscreenControlOptions', 'scaleControl', 'scaleControlOptions',
-    'mapTypeId', 'clickableIcons', 'gestureHandling'
+    'disableDoubleClickZoom',
+    'scrollwheel',
+    'draggable',
+    'draggableCursor',
+    'draggingCursor',
+    'keyboardShortcuts',
+    'zoomControl',
+    'zoomControlOptions',
+    'styles',
+    'streetViewControl',
+    'streetViewControlOptions',
+    'zoom',
+    'mapTypeControl',
+    'mapTypeControlOptions',
+    'minZoom',
+    'maxZoom',
+    'panControl',
+    'panControlOptions',
+    'rotateControl',
+    'rotateControlOptions',
+    'fullscreenControl',
+    'fullscreenControlOptions',
+    'scaleControl',
+    'scaleControlOptions',
+    'mapTypeId',
+    'clickableIcons',
+    'gestureHandling'
   ];
 
   private _observableSubscriptions: Subscription[] = [];
@@ -326,40 +348,41 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   }
 
   private _initMapInstance(el: HTMLElement) {
-    this._mapsWrapper.createMap(el, {
-      center: {lat: this.latitude || 0, lng: this.longitude || 0},
-      zoom: this.zoom,
-      minZoom: this.minZoom,
-      maxZoom: this.maxZoom,
-      disableDefaultUI: this.disableDefaultUI,
-      disableDoubleClickZoom: this.disableDoubleClickZoom,
-      scrollwheel: this.scrollwheel,
-      backgroundColor: this.backgroundColor,
-      draggable: this.draggable,
-      draggableCursor: this.draggableCursor,
-      draggingCursor: this.draggingCursor,
-      keyboardShortcuts: this.keyboardShortcuts,
-      styles: this.styles,
-      zoomControl: this.zoomControl,
-      zoomControlOptions: this.zoomControlOptions,
-      streetViewControl: this.streetViewControl,
-      streetViewControlOptions: this.streetViewControlOptions,
-      scaleControl: this.scaleControl,
-      scaleControlOptions: this.scaleControlOptions,
-      mapTypeControl: this.mapTypeControl,
-      mapTypeControlOptions: this.mapTypeControlOptions,
-      panControl: this.panControl,
-      panControlOptions: this.panControlOptions,
-      rotateControl: this.rotateControl,
-      rotateControlOptions: this.rotateControlOptions,
-      fullscreenControl: this.fullscreenControl,
-      fullscreenControlOptions: this.fullscreenControlOptions,
-      mapTypeId: this.mapTypeId,
-      clickableIcons: this.clickableIcons,
-      gestureHandling: this.gestureHandling
-    })
-      .then(() => this._mapsWrapper.getNativeMap())
-      .then(map => this.mapReady.emit(map));
+    this._mapsWrapper
+        .createMap(el, {
+          center: {lat: this.latitude || 0, lng: this.longitude || 0},
+          zoom: this.zoom,
+          minZoom: this.minZoom,
+          maxZoom: this.maxZoom,
+          disableDefaultUI: this.disableDefaultUI,
+          disableDoubleClickZoom: this.disableDoubleClickZoom,
+          scrollwheel: this.scrollwheel,
+          backgroundColor: this.backgroundColor,
+          draggable: this.draggable,
+          draggableCursor: this.draggableCursor,
+          draggingCursor: this.draggingCursor,
+          keyboardShortcuts: this.keyboardShortcuts,
+          styles: this.styles,
+          zoomControl: this.zoomControl,
+          zoomControlOptions: this.zoomControlOptions,
+          streetViewControl: this.streetViewControl,
+          streetViewControlOptions: this.streetViewControlOptions,
+          scaleControl: this.scaleControl,
+          scaleControlOptions: this.scaleControlOptions,
+          mapTypeControl: this.mapTypeControl,
+          mapTypeControlOptions: this.mapTypeControlOptions,
+          panControl: this.panControl,
+          panControlOptions: this.panControlOptions,
+          rotateControl: this.rotateControl,
+          rotateControlOptions: this.rotateControlOptions,
+          fullscreenControl: this.fullscreenControl,
+          fullscreenControlOptions: this.fullscreenControlOptions,
+          mapTypeId: this.mapTypeId,
+          clickableIcons: this.clickableIcons,
+          gestureHandling: this.gestureHandling
+        })
+        .then(() => this._mapsWrapper.getNativeMap())
+        .then(map => this.mapReady.emit(map));
 
     // register event listeners
     this._handleMapCenterChange();
@@ -386,13 +409,16 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
     let options: {[propName: string]: any} = {};
     let optionKeys =
         Object.keys(changes).filter(k => AgmMap._mapOptionsAttributes.indexOf(k) !== -1);
-    optionKeys.forEach((k) => { options[k] = changes[k].currentValue; });
+    optionKeys.forEach((k) => {
+      options[k] = changes[k].currentValue;
+    });
     this._mapsWrapper.setMapOptions(options);
   }
 
   /**
    * Triggers a resize event on the google map instance.
-   * When recenter is true, the of the google map gets called with the current lat/lng values or fitBounds value to recenter the map.
+   * When recenter is true, the of the google map gets called with the current lat/lng values or
+   * fitBounds value to recenter the map.
    * Returns a promise that gets resolved after the event was triggered.
    */
   triggerResize(recenter: boolean = true): Promise<void> {
@@ -463,16 +489,18 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
 
   private _handleBoundsChange() {
     const s = this._mapsWrapper.subscribeToMapEvent<void>('bounds_changed').subscribe(() => {
-      this._mapsWrapper.getBounds().then(
-          (bounds: LatLngBounds) => { this.boundsChange.emit(bounds); });
+      this._mapsWrapper.getBounds().then((bounds: LatLngBounds) => {
+        this.boundsChange.emit(bounds);
+      });
     });
     this._observableSubscriptions.push(s);
   }
 
   private _handleMapTypeIdChange() {
     const s = this._mapsWrapper.subscribeToMapEvent<void>('maptypeid_changed').subscribe(() => {
-      this._mapsWrapper.getMapTypeId().then(
-          (mapTypeId: MapTypeId) => { this.mapTypeIdChange.emit(mapTypeId); });
+      this._mapsWrapper.getMapTypeId().then((mapTypeId: MapTypeId) => {
+        this.mapTypeIdChange.emit(mapTypeId);
+      });
     });
     this._observableSubscriptions.push(s);
   }
@@ -488,8 +516,9 @@ export class AgmMap implements OnChanges, OnInit, OnDestroy {
   }
 
   private _handleIdleEvent() {
-    const s = this._mapsWrapper.subscribeToMapEvent<void>('idle').subscribe(
-        () => { this.idle.emit(void 0); });
+    const s = this._mapsWrapper.subscribeToMapEvent<void>('idle').subscribe(() => {
+      this.idle.emit(void 0);
+    });
     this._observableSubscriptions.push(s);
   }
 

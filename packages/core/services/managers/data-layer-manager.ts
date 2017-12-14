@@ -1,10 +1,10 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import {Injectable, NgZone} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {Observer} from 'rxjs/Observer';
 
-import { AgmDataLayer } from './../../directives/data-layer';
-import { GoogleMapsAPIWrapper } from './../google-maps-api-wrapper';
-import { Data, DataOptions, Feature } from './../google-maps-types';
+import {AgmDataLayer} from './../../directives/data-layer';
+import {GoogleMapsAPIWrapper} from './../google-maps-api-wrapper';
+import {Data, DataOptions, Feature} from './../google-maps-types';
 
 declare var google: any;
 
@@ -13,19 +13,15 @@ declare var google: any;
  */
 @Injectable()
 export class DataLayerManager {
-  private _layers: Map<AgmDataLayer, Promise<Data>> =
-  new Map<AgmDataLayer, Promise<Data>>();
+  private _layers: Map<AgmDataLayer, Promise<Data>> = new Map<AgmDataLayer, Promise<Data>>();
 
-  constructor(private _wrapper: GoogleMapsAPIWrapper, private _zone: NgZone) { }
+  constructor(private _wrapper: GoogleMapsAPIWrapper, private _zone: NgZone) {}
 
   /**
    * Adds a new Data Layer to the map.
    */
   addDataLayer(layer: AgmDataLayer) {
-    const newLayer = this._wrapper.createDataLayer(<DataOptions>{
-      style: layer.style
-    })
-    .then(d => {
+    const newLayer = this._wrapper.createDataLayer(<DataOptions>{style: layer.style}).then(d => {
       if (layer.geoJson) {
         this.getDataFeatures(d, layer.geoJson).then(features => d.features = features);
       }
@@ -41,9 +37,9 @@ export class DataLayerManager {
     });
   }
 
-  updateGeoJson(layer: AgmDataLayer, geoJson: Object | string) {
+  updateGeoJson(layer: AgmDataLayer, geoJson: Object|string) {
     this._layers.get(layer).then(l => {
-      l.forEach(function (feature: Feature) {
+      l.forEach(function(feature: Feature) {
         l.remove(feature);
 
         var index = l.features.indexOf(feature, 0);
@@ -55,8 +51,7 @@ export class DataLayerManager {
     });
   }
 
-  setDataOptions(layer: AgmDataLayer, options: DataOptions)
-  {
+  setDataOptions(layer: AgmDataLayer, options: DataOptions) {
     this._layers.get(layer).then(l => {
       l.setControlPosition(options.controlPosition);
       l.setControls(options.controls);
@@ -81,20 +76,20 @@ export class DataLayerManager {
    * @param d : google.maps.Data class instance
    * @param geoJson : url or geojson object
    */
-  getDataFeatures(d: Data, geoJson: Object | string): Promise<Feature[]> {
+  getDataFeatures(d: Data, geoJson: Object|string): Promise<Feature[]> {
     return new Promise<Feature[]>((resolve, reject) => {
-        if (typeof geoJson === 'object') {
-          try {
-            const features = d.addGeoJson(geoJson);
-            resolve(features);
-          } catch (e) {
-            reject(e);
-          }
-        } else if (typeof geoJson === 'string') {
-          d.loadGeoJson(geoJson, null, resolve);
-        } else {
-          reject(`Impossible to extract features from geoJson: wrong argument type`);
+      if (typeof geoJson === 'object') {
+        try {
+          const features = d.addGeoJson(geoJson);
+          resolve(features);
+        } catch (e) {
+          reject(e);
         }
-      });
+      } else if (typeof geoJson === 'string') {
+        d.loadGeoJson(geoJson, null, resolve);
+      } else {
+        reject(`Impossible to extract features from geoJson: wrong argument type`);
+      }
+    });
   }
 }

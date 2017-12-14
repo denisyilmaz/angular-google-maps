@@ -3,8 +3,8 @@ import { Observable } from 'rxjs/Observable';
 import * as mapTypes from './google-maps-types';
 import { Polyline } from './google-maps-types';
 import { PolylineOptions } from './google-maps-types';
-import { MapsAPILoader } from './maps-api-loader/maps-api-loader';
 import { Handler } from './google-maps-types';
+import { MapsAPILoader } from './maps-api-loader/maps-api-loader';
 /**
  * Wrapper class that handles the communication with the Google Maps Javascript
  * API v3

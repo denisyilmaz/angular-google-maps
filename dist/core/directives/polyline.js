@@ -111,7 +111,9 @@ var AgmPolyline = (function () {
         var _this = this;
         if (this.points.length) {
             this.points.forEach(function (point) {
-                var s = point.positionChanged.subscribe(function () { _this._polylineManager.updatePolylinePoints(_this); });
+                var s = point.positionChanged.subscribe(function () {
+                    _this._polylineManager.updatePolylinePoints(_this);
+                });
                 _this._subscriptions.push(s);
             });
         }
@@ -165,7 +167,9 @@ var AgmPolyline = (function () {
         return [];
     };
     /** @internal */
-    AgmPolyline.prototype.id = function () { return this._id; };
+    AgmPolyline.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
     AgmPolyline.prototype.ngOnDestroy = function () {
         this._polylineManager.deletePolyline(this);
@@ -180,9 +184,7 @@ AgmPolyline._polylineOptionsAttributes = [
     'zIndex'
 ];
 AgmPolyline.decorators = [
-    { type: Directive, args: [{
-                selector: 'agm-polyline'
-            },] },
+    { type: Directive, args: [{ selector: 'agm-polyline' },] },
 ];
 /** @nocollapse */
 AgmPolyline.ctorParameters = function () { return [

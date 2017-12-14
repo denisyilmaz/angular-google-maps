@@ -1,5 +1,5 @@
 import { NgZone } from '@angular/core';
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { AgmPolygon } from '../../directives/polygon';
 import { GoogleMapsAPIWrapper } from '../google-maps-api-wrapper';
 import { PolygonManager } from './polygon-manager';

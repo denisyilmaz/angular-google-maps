@@ -1,4 +1,4 @@
-import { EventEmitter, OnChanges, OnDestroy, SimpleChange, AfterContentInit, QueryList } from '@angular/core';
+import { AfterContentInit, EventEmitter, OnChanges, OnDestroy, QueryList, SimpleChange } from '@angular/core';
 import { MouseEvent } from '../map-types';
 import { MarkerManager } from '../services/managers/marker-manager';
 import { AgmInfoWindow } from './info-window';

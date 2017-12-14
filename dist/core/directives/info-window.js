@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, Input } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 import { InfoWindowManager } from '../services/managers/info-window-manager';
 var infoWindowId = 0;
 /**
@@ -79,26 +79,38 @@ var AgmInfoWindow = (function () {
     AgmInfoWindow.prototype._setInfoWindowOptions = function (changes) {
         var options = {};
         var optionKeys = Object.keys(changes).filter(function (k) { return AgmInfoWindow._infoWindowOptionsInputs.indexOf(k) !== -1; });
-        optionKeys.forEach(function (k) { options[k] = changes[k].currentValue; });
+        optionKeys.forEach(function (k) {
+            options[k] = changes[k].currentValue;
+        });
         this._infoWindowManager.setOptions(this, options);
     };
     /**
      * Opens the info window.
      */
-    AgmInfoWindow.prototype.open = function () { return this._infoWindowManager.open(this); };
+    AgmInfoWindow.prototype.open = function () {
+        return this._infoWindowManager.open(this);
+    };
     /**
      * Closes the info window.
      */
     AgmInfoWindow.prototype.close = function () {
         var _this = this;
-        return this._infoWindowManager.close(this).then(function () { _this.infoWindowClose.emit(); });
+        return this._infoWindowManager.close(this).then(function () {
+            _this.infoWindowClose.emit();
+        });
     };
     /** @internal */
-    AgmInfoWindow.prototype.id = function () { return this._id; };
+    AgmInfoWindow.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmInfoWindow.prototype.toString = function () { return 'AgmInfoWindow-' + this._id.toString(); };
+    AgmInfoWindow.prototype.toString = function () {
+        return 'AgmInfoWindow-' + this._id.toString();
+    };
     /** @internal */
-    AgmInfoWindow.prototype.ngOnDestroy = function () { this._infoWindowManager.deleteInfoWindow(this); };
+    AgmInfoWindow.prototype.ngOnDestroy = function () {
+        this._infoWindowManager.deleteInfoWindow(this);
+    };
     return AgmInfoWindow;
 }());
 export { AgmInfoWindow };

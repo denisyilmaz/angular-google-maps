@@ -1,10 +1,10 @@
-import { NgZone } from '@angular/core';
 import 'js-marker-clusterer';
-import { MarkerManager } from '../../../core/services/managers/marker-manager';
-import { GoogleMapsAPIWrapper } from '../../../core/services/google-maps-api-wrapper';
+import { NgZone } from '@angular/core';
 import { AgmMarker } from '../../../core/directives/marker';
-import { AgmMarkerCluster } from './../../directives/marker-cluster';
+import { GoogleMapsAPIWrapper } from '../../../core/services/google-maps-api-wrapper';
+import { MarkerManager } from '../../../core/services/managers/marker-manager';
 import { ClusterOptions } from '../google-clusterer-types';
+import { AgmMarkerCluster } from './../../directives/marker-cluster';
 export declare class ClusterManager extends MarkerManager {
     protected _mapsWrapper: GoogleMapsAPIWrapper;
     protected _zone: NgZone;

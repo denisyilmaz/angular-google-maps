@@ -9,8 +9,7 @@ import {Marker} from './../google-maps-types';
 
 @Injectable()
 export class MarkerManager {
-  protected _markers: Map<AgmMarker, Promise<Marker>> =
-      new Map<AgmMarker, Promise<Marker>>();
+  protected _markers: Map<AgmMarker, Promise<Marker>> = new Map<AgmMarker, Promise<Marker>>();
 
   constructor(protected _mapsWrapper: GoogleMapsAPIWrapper, protected _zone: NgZone) {}
 
@@ -38,7 +37,9 @@ export class MarkerManager {
   }
 
   updateLabel(marker: AgmMarker): Promise<void> {
-    return this._markers.get(marker).then((m: Marker) => { m.setLabel(marker.label); });
+    return this._markers.get(marker).then((m: Marker) => {
+      m.setLabel(marker.label);
+    });
   }
 
   updateDraggable(marker: AgmMarker): Promise<void> {

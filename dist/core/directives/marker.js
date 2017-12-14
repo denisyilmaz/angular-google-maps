@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, ContentChildren, QueryList, Input, Output } from '@angular/core';
+import { ContentChildren, Directive, EventEmitter, Input, Output, QueryList } from '@angular/core';
 import { MarkerManager } from '../services/managers/marker-manager';
 import { AgmInfoWindow } from './info-window';
 var markerId = 0;
@@ -161,9 +161,13 @@ var AgmMarker = (function () {
         this._observableSubscriptions.push(mout);
     };
     /** @internal */
-    AgmMarker.prototype.id = function () { return this._id; };
+    AgmMarker.prototype.id = function () {
+        return this._id;
+    };
     /** @internal */
-    AgmMarker.prototype.toString = function () { return 'AgmMarker-' + this._id.toString(); };
+    AgmMarker.prototype.toString = function () {
+        return 'AgmMarker-' + this._id.toString();
+    };
     /** @internal */
     AgmMarker.prototype.ngOnDestroy = function () {
         this._markerManager.deleteMarker(this);
@@ -174,9 +178,7 @@ var AgmMarker = (function () {
 }());
 export { AgmMarker };
 AgmMarker.decorators = [
-    { type: Directive, args: [{
-                selector: 'agm-marker'
-            },] },
+    { type: Directive, args: [{ selector: 'agm-marker' },] },
 ];
 /** @nocollapse */
 AgmMarker.ctorParameters = function () { return [
