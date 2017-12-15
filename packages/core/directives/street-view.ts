@@ -101,6 +101,12 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
   disableDoubleClickZoom: boolean = false;
 
   /**
+   * Enables/disables all default UI of the Google map. Please note: When the map is created, this
+   * value cannot get updated.
+   */
+  disableDefaultUI: boolean = false;
+
+  /**
    * Enables/disables close button.
    */
   enableCloseButton: boolean = true;
@@ -237,6 +243,7 @@ export class AgmStreetView implements OnChanges, OnInit, OnDestroy {
       backgroundColor: this.backgroundColor,
       enableCloseButton: this.enableCloseButton,
       disableDoubleClickZoom: this.disableDoubleClickZoom,
+      disableDefaultUI: this.disableDefaultUI,
       panControl: this.panControl,
       zoomControl: this.zoomControl,
       zoomControlOptions: this.zoomControlOptions,

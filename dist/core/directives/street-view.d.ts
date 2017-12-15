@@ -56,6 +56,11 @@ export declare class AgmStreetView implements OnChanges, OnInit, OnDestroy {
      */
     disableDoubleClickZoom: boolean;
     /**
+     * Enables/disables all default UI of the Google map. Please note: When the map is created, this
+     * value cannot get updated.
+     */
+    disableDefaultUI: boolean;
+    /**
      * Enables/disables close button.
      */
     enableCloseButton: boolean;

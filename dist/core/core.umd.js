@@ -2820,6 +2820,11 @@ var AgmStreetView = (function () {
          */
         this.disableDoubleClickZoom = false;
         /**
+         * Enables/disables all default UI of the Google map. Please note: When the map is created, this
+         * value cannot get updated.
+         */
+        this.disableDefaultUI = false;
+        /**
          * Enables/disables close button.
          */
         this.enableCloseButton = true;
@@ -2927,6 +2932,7 @@ var AgmStreetView = (function () {
             backgroundColor: this.backgroundColor,
             enableCloseButton: this.enableCloseButton,
             disableDoubleClickZoom: this.disableDoubleClickZoom,
+            disableDefaultUI: this.disableDefaultUI,
             panControl: this.panControl,
             zoomControl: this.zoomControl,
             zoomControlOptions: this.zoomControlOptions,
