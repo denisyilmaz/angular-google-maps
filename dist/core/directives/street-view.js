@@ -335,6 +335,7 @@ AgmStreetView.decorators = [
                     'zoom',
                     'draggable: mapDraggable',
                     'disableDoubleClickZoom',
+                    'disableDefaultUI',
                     'backgroundColor',
                     'zoomControl',
                 ],

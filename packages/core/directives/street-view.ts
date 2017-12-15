@@ -48,6 +48,7 @@ import {PolylineManager} from '../services/managers/polyline-manager';
     'zoom',
     'draggable: mapDraggable',
     'disableDoubleClickZoom',
+    'disableDefaultUI',
     'backgroundColor',
     'zoomControl',
   ],
